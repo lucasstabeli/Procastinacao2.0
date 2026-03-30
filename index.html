@@ -76,6 +76,15 @@
     .task-card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:16px;box-shadow:var(--shadow);transition:border-color .18s,background .18s}
     .task-card.done{border-color:rgba(51,177,111,.45);background:color-mix(in srgb,var(--surface) 85%,var(--success) 15%)}
     .task-card.failed{border-color:rgba(219,91,86,.4);background:color-mix(in srgb,var(--surface) 88%,var(--danger) 12%)}
+
+    /* === SWIPE TASK === */
+    .swipe-card{position:relative;cursor:grab;touch-action:pan-y;user-select:none}
+    .swipe-card:active{cursor:grabbing}
+    .sh-done,.sh-fail{position:absolute;top:50%;transform:translateY(-50%);font-size:12px;font-weight:800;letter-spacing:.03em;opacity:0;pointer-events:none;z-index:2;border-radius:8px;padding:4px 10px;white-space:nowrap}
+    .sh-done{left:14px;color:var(--success);background:var(--success-soft)}
+    .sh-fail{right:14px;color:var(--danger);background:var(--danger-soft)}
+    .swipe-hint-row{text-align:center;margin-top:10px;padding-top:8px;border-top:1px solid var(--line)}
+    .penalty-chip{color:var(--danger)!important}
     .task-top{display:flex;gap:14px;align-items:flex-start}
     .emoji-box{width:46px;height:46px;border-radius:14px;background:var(--surface-2);display:grid;place-items:center;font-size:22px;flex-shrink:0}
     .task-main{flex:1;min-width:0}
@@ -347,7 +356,8 @@
             <input type="text" class="f-input" id="aKaffaName" placeholder="Nome da missão">
             <input type="text" class="f-input" id="aKaffaDesc" placeholder="Descrição">
             <div class="f-row">
-              <input type="number" class="f-input" id="aKaffaReward" placeholder="Recompensa (moedas)">
+              <input type="number" class="f-input" id="aKaffaReward" placeholder="🪙 Recompensa">
+              <input type="number" class="f-input" id="aKaffaPenalty" placeholder="⚠️ Penalidade">
               <input type="text" class="f-input w-md" id="aKaffaTime" placeholder="Horário (ex: 08:00)">
             </div>
             <button class="btn primary btn-full" onclick="saveKaffa()">Salvar Missão</button>
@@ -376,8 +386,9 @@
               <input type="text" class="f-input" id="nTDesc" placeholder="Descrição breve">
             </div>
             <div class="f-row">
-              <input type="number" class="f-input" id="nTReward" placeholder="Recompensa em moedas">
-              <button class="btn primary btn-sm" onclick="addTask()">+ Adicionar</button>
+              <input type="number" class="f-input" id="nTReward" placeholder="🪙 Recompensa">
+              <input type="number" class="f-input" id="nTPenalty" placeholder="⚠️ Penalidade">
+              <button class="btn primary btn-sm" onclick="addTask()">+</button>
             </div>
           </div>
         </div>
@@ -568,10 +579,10 @@ const DEFAULT = {
   water: { current: 4, goal: 6 },
   kaffa: { name: 'Missão Kaffa', desc: 'Estágio confirmado? A missão mais valiosa do dia.', reward: 1000, time: '08:00', done: false },
   tasks: [
-    { emoji: '⏰', title: 'Acordar cedo', desc: 'Sem soneca, levanta direto.', reward: 30, state: 'done' },
-    { emoji: '🏋️', title: 'Treino do dia', desc: 'Peito + Tríceps + 20 min cardio.', reward: 35, state: 'idle' },
-    { emoji: '💻', title: 'Estudo / Projeto', desc: 'Bloco profundo de código.', reward: 25, state: 'idle' },
-    { emoji: '💧', title: 'Meta de água', desc: 'Beber todos os copos do dia.', reward: 20, state: 'done' }
+    { emoji: '⏰', title: 'Acordar cedo', desc: 'Sem soneca, levanta direto.', reward: 30, penalty: 15, state: 'done' },
+    { emoji: '🏋️', title: 'Treino do dia', desc: 'Peito + Tríceps + 20 min cardio.', reward: 35, penalty: 20, state: 'idle' },
+    { emoji: '💻', title: 'Estudo / Projeto', desc: 'Bloco profundo de código.', reward: 25, penalty: 15, state: 'idle' },
+    { emoji: '💧', title: 'Meta de água', desc: 'Beber todos os copos do dia.', reward: 20, penalty: 10, state: 'done' }
   ],
   courses: [
     { emoji: '🐍', name: 'Python Avançado', total: 313, done: 141, cpp: 20 },
@@ -682,24 +693,30 @@ function renderHoje() {
     </div>`;
 
   // Task list
-  document.getElementById('taskList').innerHTML = D.tasks.map((t, i) => `
-    <div class="task-card ${t.state}">
+  document.getElementById('taskList').innerHTML = D.tasks.map((t, i) => {
+    const pen = t.penalty || 0;
+    const isIdle = t.state === 'idle';
+    return `
+    <div class="task-card ${t.state}${isIdle ? ' swipe-card' : ''}" ${isIdle ? `data-swipe="${i}"` : ''}>
+      ${isIdle ? `<div class="sh-done">✓ Feito</div><div class="sh-fail">✗ Falhou</div>` : ''}
       <div class="task-top">
         <div class="emoji-box">${t.emoji}</div>
         <div class="task-main">
           <h3>${t.title}</h3>
           <p>${t.desc}</p>
-          <div class="mini-row"><span class="chip">+${t.reward} 🪙</span></div>
+          <div class="mini-row">
+            <span class="chip">+${t.reward} 🪙</span>
+            ${pen > 0 ? `<span class="chip penalty-chip">-${pen} 🪙</span>` : ''}
+          </div>
         </div>
         <div class="task-status">${stateTag(t.state)}</div>
       </div>
-      <div class="task-actions">
-        ${t.state === 'idle'
-          ? `<button class="btn" onclick="setTask(${i},'failed')">✗ Não feito</button>
-             <button class="btn primary" onclick="setTask(${i},'done')">✓ Feito</button>`
-          : `<button class="btn" onclick="setTask(${i},'idle')" style="font-size:12px">↩ Desfazer</button>`}
-      </div>
-    </div>`).join('');
+      ${isIdle
+        ? `<div class="swipe-hint-row"><span style="font-size:11px;color:var(--muted)">← deslize para marcar →</span></div>`
+        : `<div class="task-actions"><button class="btn" onclick="setTask(${i},'idle')" style="font-size:12px">↩ Desfazer</button></div>`}
+    </div>`;
+  }).join('');
+  initSwipeAll();
 
   // Water panel
   const cups = Array.from({length: D.water.goal}, (_, i) =>
@@ -877,21 +894,25 @@ function renderAdmin() {
   document.getElementById('aKaffaName').value = D.kaffa.name;
   document.getElementById('aKaffaDesc').value = D.kaffa.desc;
   document.getElementById('aKaffaReward').value = D.kaffa.reward;
+  document.getElementById('aKaffaPenalty').value = D.kaffa.penalty || 0;
   document.getElementById('aKaffaTime').value = D.kaffa.time;
 
   // Tasks
   document.getElementById('aTaskList').innerHTML = D.tasks.length
-    ? D.tasks.map((t, i) => `
+    ? D.tasks.map((t, i) => {
+        const pen = t.penalty || 0;
+        return `
         <div class="a-item">
           <span class="a-item-icon">${t.emoji}</span>
           <div class="a-item-info">
             <strong>${t.title}</strong>
-            <span>+${t.reward} moedas · ${t.desc}</span>
+            <span>+${t.reward} 🪙 ganho · ${pen > 0 ? `-${pen} 🪙 penalidade · ` : ''}${t.desc}</span>
           </div>
           <div class="a-btns">
             <button class="icon-btn del" title="Deletar" onclick="deleteTask(${i})">🗑</button>
           </div>
-        </div>`).join('')
+        </div>`;
+      }).join('')
     : `<p class="empty-msg">Nenhuma missão.</p>`;
 
   // Routine
@@ -984,8 +1005,21 @@ function completeKaffa() {
 function setTask(i, state) {
   const prev = D.tasks[i].state;
   if (prev === state) return;
-  if (state === 'done' && prev !== 'done') D.coins += D.tasks[i].reward;
-  if (state !== 'done' && prev === 'done') D.coins = Math.max(0, D.coins - D.tasks[i].reward);
+  const t = D.tasks[i];
+  const penalty = t.penalty || 0;
+
+  // Desfazer feito → idle: tira recompensa
+  if (prev === 'done' && state === 'idle')   D.coins = Math.max(0, D.coins - t.reward);
+  // Desfazer falhou → idle: devolve penalidade
+  if (prev === 'failed' && state === 'idle') D.coins += penalty;
+  // Completar → feito: adiciona recompensa
+  if (state === 'done' && prev !== 'done')   D.coins += t.reward;
+  // Marcar falhou: desconta penalidade (exceto se veio de 'done', aí tira recompensa também)
+  if (state === 'failed') {
+    if (prev === 'done') D.coins = Math.max(0, D.coins - t.reward);
+    if (!D.vacation) D.coins = Math.max(0, D.coins - penalty);
+  }
+
   D.tasks[i].state = state;
   save(); renderHoje();
 }
@@ -1044,21 +1078,23 @@ function saveKaffa() {
   const name = document.getElementById('aKaffaName').value.trim();
   const desc = document.getElementById('aKaffaDesc').value.trim();
   const reward = parseInt(document.getElementById('aKaffaReward').value);
+  const penalty = parseInt(document.getElementById('aKaffaPenalty').value) || 0;
   const time = document.getElementById('aKaffaTime').value.trim();
   if (!name) { alert('Nome é obrigatório!'); return; }
-  D.kaffa = { ...D.kaffa, name, desc, reward: reward || D.kaffa.reward, time: time || D.kaffa.time };
+  D.kaffa = { ...D.kaffa, name, desc, reward: reward || D.kaffa.reward, penalty, time: time || D.kaffa.time };
   save(); alert('✓ Missão Kaffa atualizada!');
 }
 
 function addTask() {
-  const emoji = document.getElementById('nTEmoji').value.trim() || '🎯';
-  const title = document.getElementById('nTTitle').value.trim();
-  const desc  = document.getElementById('nTDesc').value.trim();
-  const reward = parseInt(document.getElementById('nTReward').value) || 20;
+  const emoji   = document.getElementById('nTEmoji').value.trim() || '🎯';
+  const title   = document.getElementById('nTTitle').value.trim();
+  const desc    = document.getElementById('nTDesc').value.trim();
+  const reward  = parseInt(document.getElementById('nTReward').value) || 20;
+  const penalty = parseInt(document.getElementById('nTPenalty').value) || 0;
   if (!title) { alert('Título é obrigatório!'); return; }
-  D.tasks.push({ emoji, title, desc, reward, state: 'idle' });
+  D.tasks.push({ emoji, title, desc, reward, penalty, state: 'idle' });
   save();
-  ['nTEmoji','nTTitle','nTDesc','nTReward'].forEach(id => document.getElementById(id).value = '');
+  ['nTEmoji','nTTitle','nTDesc','nTReward','nTPenalty'].forEach(id => document.getElementById(id).value = '');
   renderAdmin();
 }
 function deleteTask(i) {
@@ -1159,6 +1195,83 @@ function resetAll() {
   localStorage.removeItem('stabHub2');
   D = JSON.parse(JSON.stringify(DEFAULT));
   save(); location.reload();
+}
+
+// ========================================================
+// SWIPE GESTURE
+// ========================================================
+function initSwipeAll() {
+  document.querySelectorAll('.task-card[data-swipe]').forEach(el => {
+    initSwipe(el, parseInt(el.getAttribute('data-swipe')));
+  });
+}
+
+function initSwipe(el, idx) {
+  let startX = 0, curX = 0, dragging = false;
+  const THRESHOLD = 80;
+  const hintR = el.querySelector('.sh-done');
+  const hintL = el.querySelector('.sh-fail');
+
+  function onStart(x) {
+    startX = x; curX = x; dragging = true;
+    el.style.transition = 'none';
+  }
+
+  function onMove(x) {
+    if (!dragging) return;
+    curX = x;
+    const dx = curX - startX;
+    el.style.transform = `translateX(${dx}px) rotate(${dx * 0.025}deg)`;
+    el.style.opacity = String(1 - Math.abs(dx) / 320);
+    const prog = Math.min(Math.abs(dx) / THRESHOLD, 1);
+    if (dx > 0) {
+      el.style.background = `color-mix(in srgb, var(--surface) ${100 - prog*28}%, var(--success) ${prog*28}%)`;
+      if (hintR) hintR.style.opacity = prog;
+      if (hintL) hintL.style.opacity = 0;
+    } else if (dx < 0) {
+      el.style.background = `color-mix(in srgb, var(--surface) ${100 - prog*28}%, var(--danger) ${prog*28}%)`;
+      if (hintL) hintL.style.opacity = prog;
+      if (hintR) hintR.style.opacity = 0;
+    } else {
+      el.style.background = '';
+      if (hintR) hintR.style.opacity = 0;
+      if (hintL) hintL.style.opacity = 0;
+    }
+  }
+
+  function onEnd() {
+    if (!dragging) return;
+    dragging = false;
+    const dx = curX - startX;
+    el.style.transition = 'transform .28s ease, opacity .28s ease';
+    if (dx > THRESHOLD) {
+      el.style.transform = 'translateX(130%) rotate(15deg)';
+      el.style.opacity = '0';
+      setTimeout(() => setTask(idx, 'done'), 280);
+    } else if (dx < -THRESHOLD) {
+      el.style.transform = 'translateX(-130%) rotate(-15deg)';
+      el.style.opacity = '0';
+      setTimeout(() => setTask(idx, 'failed'), 280);
+    } else {
+      el.style.transform = '';
+      el.style.opacity = '';
+      el.style.background = '';
+      if (hintR) hintR.style.opacity = 0;
+      if (hintL) hintL.style.opacity = 0;
+    }
+  }
+
+  // Touch
+  el.addEventListener('touchstart', e => onStart(e.touches[0].clientX), { passive: true });
+  el.addEventListener('touchmove',  e => { e.preventDefault(); onMove(e.touches[0].clientX); }, { passive: false });
+  el.addEventListener('touchend',   () => onEnd());
+
+  // Mouse (desktop)
+  el.addEventListener('mousedown', e => { e.preventDefault(); onStart(e.clientX); });
+  const mm = e => { if (dragging) onMove(e.clientX); };
+  const mu = () => { if (dragging) onEnd(); };
+  document.addEventListener('mousemove', mm);
+  document.addEventListener('mouseup',   mu);
 }
 
 // ========================================================
