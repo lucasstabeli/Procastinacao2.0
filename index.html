@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Stabeli Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root,[data-theme="light"]{
+      --bg:#f4f1eb;--surface:#fbf8f3;--surface-2:#f1ece4;--surface-3:#e7e0d5;
+      --text:#191713;--muted:#6f6a61;--line:rgba(25,23,19,.12);
+      --accent:#d76633;--accent-soft:rgba(215,102,51,.12);
+      --success:#2d8f5c;--success-soft:rgba(45,143,92,.14);
+      --danger:#b14a45;--danger-soft:rgba(177,74,69,.14);
+      --blue:#2d6ea8;--purple:#8b5cf6;--chip:#efe7db;
+      --shadow:0 10px 30px rgba(20,16,10,.08);
+    }
+    [data-theme="dark"]{
+      --bg:#0f0f10;--surface:#17171a;--surface-2:#1d1d21;--surface-3:#26262b;
+      --text:#f4f1eb;--muted:#9e9aa2;--line:rgba(255,255,255,.09);
+      --accent:#f06a3b;--accent-soft:rgba(240,106,59,.15);
+      --success:#33b16f;--success-soft:rgba(51,177,111,.16);
+      --danger:#db5b56;--danger-soft:rgba(219,91,86,.16);
+      --blue:#4d8fd2;--purple:#a78bfa;--chip:#232328;
+      --shadow:0 18px 40px rgba(0,0,0,.32);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+    button,input,select,textarea{font:inherit}
+    a{color:inherit;text-decoration:none}
+
+    /* === LAYOUT === */
+    .app{max-width:460px;margin:0 auto;padding:20px 16px 110px}
+
+    /* === TOPBAR === */
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:42px;height:42px;border-radius:14px;background:var(--accent-soft);display:grid;place-items:center;color:var(--accent);flex-shrink:0}
+    .logo svg{width:24px;height:24px}
+    .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:700}
+    h1{font-family:"Bebas Neue",sans-serif;font-size:38px;line-height:.95;letter-spacing:.04em;font-weight:400}
+    .theme-btn{width:44px;height:44px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;flex-shrink:0;font-size:16px}
+
+    /* === TYPOGRAPHY === */
+    h2{font-family:"Bebas Neue",sans-serif;font-size:28px;line-height:1;letter-spacing:.04em;font-weight:400}
+    h3{font-family:inherit;font-size:15px;font-weight:700;letter-spacing:0;line-height:1.2}
+
+    /* === SECTIONS === */
+    .section{display:none}
+    .section.active{display:block;animation:fadeUp .22s ease}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+    /* === SECTION HEAD === */
+    .section-head{display:flex;justify-content:space-between;align-items:flex-end;margin:20px 2px 12px}
+    .section-head span{font-size:12px;color:var(--muted)}
+
+    /* === STACK === */
+    .stack{display:flex;flex-direction:column;gap:12px}
+
+    /* === HERO === */
+    .hero{background:var(--surface);border:1px solid var(--line);border-radius:26px;padding:18px;box-shadow:var(--shadow);margin-bottom:18px}
+    .hero-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:16px}
+    .hero p{font-size:13px;color:var(--muted);margin-top:6px;max-width:30ch}
+    .pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:7px 12px;background:var(--chip);font-size:12px;color:var(--muted);font-weight:700;flex-shrink:0}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .stat{background:var(--surface-2);border:1px solid var(--line);border-radius:18px;padding:12px}
+    .stat strong{display:block;font-family:"Bebas Neue",sans-serif;font-size:28px;letter-spacing:.05em;color:var(--accent);line-height:1}
+    .stat span{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-top:4px}
+
+    /* === CARD === */
+    .card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:16px;box-shadow:var(--shadow)}
+
+    /* === TASK CARD === */
+    .task-card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:16px;box-shadow:var(--shadow);transition:border-color .18s,background .18s}
+    .task-card.done{border-color:rgba(51,177,111,.45);background:color-mix(in srgb,var(--surface) 85%,var(--success) 15%)}
+    .task-card.failed{border-color:rgba(219,91,86,.4);background:color-mix(in srgb,var(--surface) 88%,var(--danger) 12%)}
+    .task-top{display:flex;gap:14px;align-items:flex-start}
+    .emoji-box{width:46px;height:46px;border-radius:14px;background:var(--surface-2);display:grid;place-items:center;font-size:22px;flex-shrink:0}
+    .task-main{flex:1;min-width:0}
+    .task-main p{font-size:12px;color:var(--muted);margin-top:4px}
+    .task-status{flex-shrink:0;min-width:80px;text-align:right}
+    .tag{display:inline-flex;padding:7px 10px;border-radius:999px;font-size:11px;font-weight:700;background:var(--surface-2);color:var(--muted)}
+    .tag.done{background:var(--success-soft);color:var(--success)}
+    .tag.failed{background:var(--danger-soft);color:var(--danger)}
+    .tag.accent{background:var(--accent-soft);color:var(--accent)}
+
+    /* === CHIPS === */
+    .mini-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+    .chip{padding:6px 10px;border-radius:999px;background:var(--chip);font-size:11px;color:var(--muted);font-weight:700}
+
+    /* === ACTIONS === */
+    .task-actions{display:flex;gap:8px;margin-top:12px}
+    .btn{flex:1;min-height:42px;border-radius:13px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-weight:700;cursor:pointer;transition:opacity .15s}
+    .btn:hover{opacity:.82}
+    .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+    .btn.danger{background:var(--danger-soft);border-color:var(--danger);color:var(--danger)}
+    .btn.success-btn{background:var(--success-soft);border-color:var(--success);color:var(--success)}
+    .btn-full{width:100%;display:block}
+    .btn-sm{flex:none;padding:0 14px;min-height:38px;font-size:13px}
+
+    /* === PANEL (aside) === */
+    .panel{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:16px;box-shadow:var(--shadow)}
+    .panel-title{font-size:13px;font-weight:700;margin-bottom:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+    .big-num{font-family:"Bebas Neue",sans-serif;font-size:36px;letter-spacing:.04em;color:var(--accent);line-height:1}
+    .sub-text{font-size:12px;color:var(--muted);margin-top:3px}
+
+    /* === PROGRESS === */
+    .progress{height:8px;background:var(--surface-3);border-radius:999px;overflow:hidden;margin-top:10px}
+    .progress>span{display:block;height:100%;background:var(--accent);border-radius:999px;transition:width .3s ease}
+
+    /* === WATER CUPS === */
+    .water-cups{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+    .wcup{width:34px;height:34px;border-radius:11px;border:1px solid var(--line);background:var(--surface-2);display:grid;place-items:center;font-size:17px;cursor:pointer;transition:all .15s}
+    .wcup.filled{background:rgba(77,143,210,.22);border-color:rgba(77,143,210,.45)}
+
+    /* === TIMELINE === */
+    .timeline{display:flex;flex-direction:column;gap:10px}
+    .t-block{display:flex;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px 16px;position:relative;overflow:hidden}
+    .t-block::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--block-color,var(--accent))}
+    .t-time{font-family:"Bebas Neue",sans-serif;font-size:17px;letter-spacing:.08em;color:var(--muted);min-width:55px;flex-shrink:0}
+    .t-block h3{font-size:14px;font-weight:700}
+    .t-block p{font-size:12px;color:var(--muted);margin-top:3px}
+
+    /* === CALENDAR === */
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:12px}
+    .cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:11px;background:var(--surface-2);border:1px solid var(--line);font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;gap:2px}
+    .cal-day.today{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+    .cal-day.done{background:rgba(51,177,111,.18);border-color:rgba(51,177,111,.45);color:var(--success)}
+    .cal-day.missed{background:rgba(219,91,86,.14);border-color:rgba(219,91,86,.35);color:var(--danger)}
+    .cal-day.rest{background:rgba(167,139,250,.14);border-color:rgba(167,139,250,.35);color:var(--purple)}
+    .wt-label{font-size:7.5px;text-transform:uppercase;letter-spacing:.4px;opacity:.75}
+
+    /* === COURSES === */
+    .course-pct{font-family:"Bebas Neue",sans-serif;font-size:22px;letter-spacing:.04em;color:var(--accent)}
+
+    /* === SHOP === */
+    .shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .shop-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px;text-align:center;box-shadow:var(--shadow)}
+    .shop-emoji{font-size:30px;display:block;margin-bottom:8px}
+    .shop-name{font-weight:700;font-size:13px;margin-bottom:3px}
+    .shop-price{color:var(--accent);font-size:13px;font-weight:700;margin-bottom:12px}
+    .inv-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .inv-card{background:var(--surface);border:1px solid rgba(240,106,59,.22);border-radius:20px;padding:16px;text-align:center}
+
+    /* === GOALS === */
+    .goal-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow)}
+    .goal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+    .goal-name{font-weight:700;font-size:14px}
+    .goal-val{font-family:"Bebas Neue",sans-serif;font-size:22px}
+
+    /* === NAV === */
+    .nav{position:fixed;left:50%;transform:translateX(-50%);bottom:12px;width:min(460px,calc(100% - 18px));background:rgba(15,15,16,.92);border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:24px;padding:8px;display:grid;grid-template-columns:repeat(6,1fr);gap:5px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+    .nav button{min-height:50px;border-radius:14px;color:#b0acb8;background:transparent;font-size:9px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:1px solid transparent;cursor:pointer;transition:all .15s;padding:0}
+    .nav button svg{width:18px;height:18px}
+    .nav button.active{background:rgba(240,106,59,.18);color:#fff;border-color:rgba(240,106,59,.25)}
+    .nav button span{line-height:1}
+
+    /* === ADMIN === */
+    .admin-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:var(--shadow)}
+    .admin-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;transition:background .15s}
+    .admin-hdr:hover{background:var(--surface-2)}
+    .admin-hdr-left{display:flex;align-items:center;gap:10px}
+    .admin-icon{width:38px;height:38px;border-radius:12px;background:var(--surface-2);display:grid;place-items:center;font-size:18px;flex-shrink:0}
+    .admin-hdr h3{font-size:14px;font-weight:700;margin-bottom:1px}
+    .admin-hdr p{font-size:11px;color:var(--muted)}
+    .admin-arrow{color:var(--muted);font-size:12px;transition:transform .2s;flex-shrink:0}
+    .admin-arrow.open{transform:rotate(180deg)}
+    .admin-body{display:none;padding:0 16px 16px;border-top:1px solid var(--line)}
+    .admin-body.open{display:block}
+
+    /* Admin item rows */
+    .a-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+    .a-item:last-of-type{border-bottom:none}
+    .a-item-icon{font-size:18px;flex-shrink:0;width:24px;text-align:center}
+    .a-item-info{flex:1;min-width:0}
+    .a-item-info strong{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+    .a-item-info span{font-size:11px;color:var(--muted)}
+    .a-btns{display:flex;gap:6px;flex-shrink:0}
+    .icon-btn{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--surface-2);color:var(--muted);display:grid;place-items:center;cursor:pointer;font-size:13px;transition:all .15s}
+    .icon-btn:hover{border-color:var(--accent);color:var(--accent)}
+    .icon-btn.del:hover{border-color:var(--danger);color:var(--danger)}
+
+    /* Admin form */
+    .admin-form{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+    .form-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;display:block}
+    .f-row{display:flex;gap:8px;margin-bottom:8px}
+    .f-input{padding:9px 12px;border-radius:11px;border:1px solid var(--line);background:var(--surface-2);color:var(--text);font-size:13px;flex:1;transition:border-color .15s;min-width:0}
+    .f-input:focus{outline:none;border-color:var(--accent)}
+    .f-input.w-sm{width:70px;flex:none}
+    .f-input.w-md{width:110px;flex:none}
+
+    /* Danger zone / vacation */
+    .danger-zone{background:var(--surface);border:1px solid rgba(219,91,86,.3);border-radius:20px;padding:16px;box-shadow:var(--shadow)}
+    .switch-row{display:flex;justify-content:space-between;align-items:center}
+    .toggle{width:48px;height:28px;border-radius:999px;background:var(--surface-3);border:1px solid var(--line);position:relative;cursor:pointer;flex-shrink:0}
+    .toggle-thumb{position:absolute;top:50%;width:20px;height:20px;border-radius:50%;transform:translateY(-50%);transition:left .2s,background .2s}
+
+    /* Misc */
+    .divider{height:1px;background:var(--line);margin:14px 0}
+    .empty-msg{text-align:center;padding:20px;font-size:12px;color:var(--muted)}
+    .note{padding:11px 14px;border-radius:14px;background:var(--accent-soft);font-size:12px;color:var(--text);margin-top:10px}
+    .note.success{background:var(--success-soft);color:var(--success)}
+
+    @media (min-width:700px){
+      .app{max-width:980px;padding-bottom:40px}
+      .d-grid{display:grid;grid-template-columns:1.25fr .75fr;gap:16px}
+      .nav{position:static;transform:none;width:100%;margin-top:18px;background:var(--surface);border-color:var(--line);backdrop-filter:none}
+    }
+  </style>
+  <base target="_blank">
+</head>
+<body>
+<main class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 18V6l7-2 7 2v12l-7 2-7-2Z"/><path d="M12 4v16"/><path d="M5 9.5 12 12l7-2.5"/>
+        </svg>
+      </div>
+      <div>
+        <div class="eyebrow">Stabeli system</div>
+        <h1>Hub da rotina</h1>
+      </div>
+    </div>
+    <button class="theme-btn" id="themeBtn" aria-label="Alternar tema">☾</button>
+  </header>
+
+  <!-- ===== HOJE ===== -->
+  <section class="section active" id="hoje">
+    <div class="hero" id="heroBlock"></div>
+    <div class="d-grid">
+      <div>
+        <div class="section-head"><h2>Missão principal</h2><span>kaffa</span></div>
+        <div id="kaffaCard"></div>
+        <div class="section-head" style="margin-top:16px"><h2>Missões do dia</h2><span>diárias</span></div>
+        <div class="stack" id="taskList"></div>
+        <p style="margin-top:14px;font-size:11px;color:var(--muted);text-align:center">Complete as missões para ganhar moedas 🪙</p>
+      </div>
+      <aside>
+        <div class="section-head"><h2>Radar</h2><span>visão geral</span></div>
+        <div class="stack">
+          <div class="panel" id="waterPanel"></div>
+          <div class="panel" id="workoutPanel"></div>
+          <div class="panel" id="coursePanel"></div>
+          <div class="panel">
+            <div class="panel-title">Semana de treinos</div>
+            <div class="cal-grid" id="weekCalMini"></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ===== ROTINA ===== -->
+  <section class="section" id="rotina">
+    <div class="section-head"><h2>Rotina semanal</h2><span>programação</span></div>
+    <div class="timeline" id="routineTimeline"></div>
+
+    <div class="section-head" style="margin-top:24px"><h2>Calendário de treinos</h2><span>clique para marcar</span></div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <span style="font-weight:700">Março 2026</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <span class="chip" style="background:rgba(51,177,111,.18);color:var(--success)">✓ Feito</span>
+          <span class="chip" style="background:rgba(219,91,86,.18);color:var(--danger)">✗ Perdido</span>
+          <span class="chip" style="background:rgba(167,139,250,.18);color:var(--purple)">🛌 Desc.</span>
+        </div>
+      </div>
+      <div class="cal-grid" id="workoutCal"></div>
+      <p style="margin-top:10px;font-size:11px;color:var(--muted)">Clique em um dia para registrar. Clique novamente para mudar o estado.</p>
+    </div>
+  </section>
+
+  <!-- ===== CURSOS ===== -->
+  <section class="section" id="cursos">
+    <div class="section-head"><h2>Cursos em andamento</h2><span>progresso</span></div>
+    <div class="stack" id="coursesList"></div>
+  </section>
+
+  <!-- ===== LOJA ===== -->
+  <section class="section" id="loja">
+    <div class="section-head"><h2>Loja de recompensas</h2><span>gaste suas moedas</span></div>
+    <div class="card" style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Saldo disponível</div>
+          <div id="shopBalance" style="font-family:'Bebas Neue';font-size:44px;color:var(--accent);line-height:1">🪙 0</div>
+        </div>
+        <button class="btn btn-sm" onclick="toggleBau()">🎒 Ver Baú</button>
+      </div>
+    </div>
+    <div id="bauSection" style="display:none;margin-bottom:16px">
+      <div class="section-head"><h2>🎒 Baú</h2><span>itens comprados</span></div>
+      <div class="inv-grid" id="inventoryList"></div>
+    </div>
+    <div class="shop-grid" id="shopList"></div>
+  </section>
+
+  <!-- ===== METAS ===== -->
+  <section class="section" id="metas">
+    <div class="section-head"><h2>Metas financeiras</h2><span>guardar &amp; comprar</span></div>
+    <div class="card" style="margin-bottom:16px" id="savingsCard"></div>
+    <div class="section-head"><h2>Lista de compras</h2><span>prioridades</span></div>
+    <div class="stack" id="goalsList"></div>
+  </section>
+
+  <!-- ===== ADMIN ===== -->
+  <section class="section" id="admin">
+    <div class="section-head"><h2>Administração</h2><span>configure tudo aqui</span></div>
+    <div class="stack">
+
+      <!-- Água -->
+      <div class="admin-card">
+        <div class="admin-hdr" onclick="toggleAccordion('agua')">
+          <div class="admin-hdr-left">
+            <div class="admin-icon">💧</div>
+            <div><h3>Meta de Água</h3><p>Copos diários</p></div>
+          </div>
+          <span class="admin-arrow" id="arr-agua">▼</span>
+        </div>
+        <div class="admin-body" id="body-agua">
+          <div style="margin-top:14px">
+            <label class="form-label">Quantos copos por dia</label>
+            <div class="f-row">
+              <input type="number" class="f-input w-md" id="aWaterGoal" min="1" max="20" placeholder="6">
+              <button class="btn primary btn-sm" onclick="saveWaterGoal()">Salvar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Missão Principal -->
+      <div class="admin-card">
+        <div class="admin-hdr" onclick="toggleAccordion('kaffa')">
+          <div class="admin-hdr-left">
+            <div class="admin-icon">⚔️</div>
+            <div><h3>Missão Principal</h3><p>Kaffa / missão do dia</p></div>
+          </div>
+          <span class="admin-arrow" id="arr-kaffa">▼</span>
+        </div>
+        <div class="admin-body" id="body-kaffa">
+          <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px">
+            <input type="text" class="f-input" id="aKaffaName" placeholder="Nome da missão">
+            <input type="text" class="f-input" id="aKaffaDesc" placeholder="Descrição">
+            <div class="f-row">
+              <input type="number" class="f-input" id="aKaffaReward" placeholder="Recompensa (moedas)">
+              <input type="text" class="f-input w-md" id="aKaffaTime" placeholder="Horário (ex: 08:00)">
+            </div>
+            <button class="btn primary btn-full" onclick="saveKaffa()">Salvar Missão</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Missões Diárias -->
+      <div class="admin-card">
+        <div class="admin-hdr" onclick="toggleAccordion('tasks')">
+          <div class="admin-hdr-left">
+            <div class="admin-icon">📋</div>
+            <div><h3>Missões Diárias</h3><p>Adicionar, editar e remover</p></div>
+          </div>
+          <span class="admin-arrow" id="arr-tasks">▼</span>
+        </div>
+        <div class="admin-body" id="body-tasks">
+          <div id="aTaskList" style="margin-top:12px"></div>
+          <div class="admin-form">
+            <span class="form-label">Adicionar nova missão</span>
+            <div class="f-row">
+              <input type="text" class="f-input w-sm" id="nTEmoji" placeholder="🎯">
+              <input type="text" class="f-input" id="nTTitle" placeholder="Título da missão">
+            </div>
+            <div class="f-row">
+              <input type="text" class="f-input" id="nTDesc" placeholder="Descrição breve">
+            </div>
+            <div class="f-row">
+              <input type="number" class="f-input" id="nTReward" placeholder="Recompensa em moedas">
+              <button class="btn primary btn-sm" onclick="addTask()">+ Adicionar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rotina Semanal -->
+      <div class="admin-card">
+        <div class="admin-hdr" onclick="toggleAccordion('routine')">
+          <div class="admin-hdr-left">
+            <div class="admin-icon">📅</div>
+            <div><h3>Rotina Semanal</h3><p>Blocos de horário do dia</p></div>
+          </div>
+          <span class="admin-arrow" id="arr-routine">▼</span>
+        </div>
+        <div class="admin-body" id="body-routine">
+          <div id="aRoutineList" style="margin-top:12px"></div>
+          <div class="admin-form">
+            <span class="form-label">Adicionar bloco de horário</span>
+            <div class="f-row">
+              <input type="text" class="f-input w-md" id="nRTime" placeholder="09:00">
+              <input type="text" class="f-input" id="nRTitle" placeholder="Título">
+            </div>
+            <div class="f-row">
+              <input type="text" class="f-input" id="nRDesc" placeholder="Descrição">
+            </div>
+            <div class="f-row">
+              <input type="text" class="f-input" id="nRColor" placeholder="Cor (ex: #f3b63f ou var(--accent))">
+              <button class="btn primary btn-sm" onclick="addRoutine()">+ Adicionar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cursos -->
+      <div class="admin-card">
+        <div class="admin-hdr" onclick="toggleAccordion('courses')">
+          <div class="admin-hdr-left">
+            <div class="admin-icon">📚</div>
+            <div><h3>Cursos</h3><p>Gerenciar lista de cursos</p></div>
+          </div>
+          <span class="admin-arrow" id="arr-courses">▼</span>
+        </div>
+        <div class="admin-body" id="body-courses">
+          <div id="aCourseList" style="margin-top:12px"></div>
+          <div class="admin-form">
+            <span class="form-label">Adicionar curso</span>
+            <div class="f-row">
+              <input type="text" class="f-input w-sm" id="nCEmoji" placeholder="📖">
+              <input type="text" class="f-input" id="nCName" placeholder="Nome do curso">
+            </div>
+            <div class="f-row">
+              <input type="number" class="f-input" id="nCTotal" placeholder="Total de aulas">
+              <input type="number" class="f-input" id="nCDone" placeholder="Aulas feitas">
+              <button class="btn primary btn-sm" onclick="addCourse()">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loja -->
+      <div class="admin-card">
+        <div class="admin-hdr" onclick="toggleAccordion('shop')">
+          <div class="admin-hdr-left">
+            <div class="admin-icon">🛒</div>
+            <div><h3>Loja</h3><p>Itens e preços das recompensas</p></div>
+          </div>
+          <span class="admin-arrow" id="arr-shop">▼</span>
+        </div>
+        <div class="admin-body" id="body-shop">
+          <div id="aShopList" style="margin-top:12px"></div>
+          <div class="admin-form">
+            <span class="form-label">Adicionar item à loja</span>
+            <div class="f-row">
+              <input type="text" class="f-input w-sm" id="nSEmoji" placeholder="🎁">
+              <input type="text" class="f-input" id="nSName" placeholder="Nome do item">
+              <input type="number" class="f-input w-sm" id="nSPrice" placeholder="🪙">
+              <button class="btn primary btn-sm" onclick="addShopItem()">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Metas Financeiras -->
+      <div class="admin-card">
+        <div class="admin-hdr" onclick="toggleAccordion('goals')">
+          <div class="admin-hdr-left">
+            <div class="admin-icon">💰</div>
+            <div><h3>Metas Financeiras</h3><p>Poupança e lista de compras</p></div>
+          </div>
+          <span class="admin-arrow" id="arr-goals">▼</span>
+        </div>
+        <div class="admin-body" id="body-goals">
+          <div style="margin-top:14px">
+            <span class="form-label">Poupança mensal</span>
+            <div class="f-row">
+              <input type="number" class="f-input" id="aSavingsGoal" placeholder="Meta mensal R$">
+              <input type="number" class="f-input" id="aSavingsCurrent" placeholder="Guardado R$">
+              <button class="btn primary btn-sm" onclick="saveSavings()">Salvar</button>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <span class="form-label">Metas de compra</span>
+          <div id="aGoalList"></div>
+          <div class="admin-form">
+            <span class="form-label">Adicionar meta</span>
+            <div class="f-row">
+              <input type="text" class="f-input w-sm" id="nGEmoji" placeholder="🎯">
+              <input type="text" class="f-input" id="nGName" placeholder="O que quer comprar">
+            </div>
+            <div class="f-row">
+              <input type="number" class="f-input" id="nGValue" placeholder="Valor R$">
+              <select class="f-input w-md" id="nGPriority">
+                <option value="1">Prioridade 1 🔥</option>
+                <option value="2">Prioridade 2 ⭐</option>
+                <option value="3">Prioridade 3 📌</option>
+              </select>
+              <button class="btn primary btn-sm" onclick="addGoal()">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zona de Perigo -->
+      <div class="danger-zone">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <span style="font-size:18px">⚠️</span>
+          <span style="font-weight:700;font-size:14px">Zona de Perigo</span>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Ações irreversíveis. Cuidado ao usar.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn danger btn-sm" onclick="resetDay()">🔄 Resetar Dia</button>
+          <button class="btn danger btn-sm" onclick="resetAll()">🗑 Apagar Tudo</button>
+        </div>
+      </div>
+
+      <!-- Modo Férias -->
+      <div class="card">
+        <div class="switch-row">
+          <div>
+            <div style="font-weight:700;font-size:14px">🌙 Modo Férias</div>
+            <p style="font-size:11px;color:var(--muted);margin-top:3px">Sem penalidades esta semana</p>
+          </div>
+          <div class="toggle" onclick="toggleVacation()" id="vacToggle">
+            <div class="toggle-thumb" id="vacThumb" style="left:4px;background:var(--muted)"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== NAV ===== -->
+  <nav class="nav">
+    <button class="active" onclick="showTab('hoje',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-8 9 8v8a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Hoje</span>
+    </button>
+    <button onclick="showTab('rotina',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      <span>Rotina</span>
+    </button>
+    <button onclick="showTab('cursos',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      <span>Cursos</span>
+    </button>
+    <button onclick="showTab('loja',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <span>Loja</span>
+    </button>
+    <button onclick="showTab('metas',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      <span>Metas</span>
+    </button>
+    <button onclick="showTab('admin',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 1 0 4.93 19.07M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <span>Admin</span>
+    </button>
+  </nav>
+
+</main>
+
+<script>
+// ========================================================
+// DEFAULT DATA
+// ========================================================
+const DEFAULT = {
+  coins: 420, streak: 7, vacation: false,
+  water: { current: 4, goal: 6 },
+  kaffa: { name: 'Missão Kaffa', desc: 'Estágio confirmado? A missão mais valiosa do dia.', reward: 1000, time: '08:00', done: false },
+  tasks: [
+    { emoji: '⏰', title: 'Acordar cedo', desc: 'Sem soneca, levanta direto.', reward: 30, state: 'done' },
+    { emoji: '🏋️', title: 'Treino do dia', desc: 'Peito + Tríceps + 20 min cardio.', reward: 35, state: 'idle' },
+    { emoji: '💻', title: 'Estudo / Projeto', desc: 'Bloco profundo de código.', reward: 25, state: 'idle' },
+    { emoji: '💧', title: 'Meta de água', desc: 'Beber todos os copos do dia.', reward: 20, state: 'done' }
+  ],
+  courses: [
+    { emoji: '🐍', name: 'Python Avançado', total: 313, done: 141, cpp: 20 },
+    { emoji: '💻', name: 'C# .NET', total: 278, done: 64, cpp: 20 },
+    { emoji: '🗄️', name: 'SQL e Banco de Dados', total: 120, done: 80, cpp: 20 }
+  ],
+  routine: [
+    { time: '06:30', title: 'Acordar', desc: 'Sem soneca — água imediatamente. Começo forte.', color: 'var(--purple)' },
+    { time: '07:00', title: 'Academia — Seg/Qua/Sex', desc: 'Treino pesado. Ter/Qui: cardio ou esporte.', color: 'var(--accent)' },
+    { time: '09:00', title: 'Estudo / Projeto', desc: 'Bloco profundo: Python, C#, SQL, JS. Sem celular.', color: 'var(--blue)' },
+    { time: '13:00', title: 'Kaffa Tecnologia', desc: 'Estágio — ArcGIS, C#, SQL. Aprende com a equipe.', color: '#f3b63f' },
+    { time: '20:30', title: 'Conteúdo / Revisão', desc: 'Instagram, leitura leve ou fechar pendências.', color: 'var(--success)' }
+  ],
+  shop: [
+    { emoji: '🏀', name: 'Jogar Basquete', price: 500 },
+    { emoji: '❤️', name: 'Sair c/ Namorada', price: 500 },
+    { emoji: '🎁', name: 'Comprar Algo', price: 1000 },
+    { emoji: '🎮', name: 'Video Game', price: 500 },
+    { emoji: '🛹', name: 'Andar de Skate', price: 500 },
+    { emoji: '🍻', name: 'Sair com Amigos', price: 500 }
+  ],
+  inventory: [
+    { emoji: '🏀', name: 'Jogar Basquete', date: '28/03' },
+    { emoji: '🎮', name: 'Video Game', date: '25/03' }
+  ],
+  goals: [
+    { emoji: '🎧', name: 'Fone novo', value: 350, saved: 230, priority: 1, desc: 'Urgente pro trabalho e estudo' },
+    { emoji: '👟', name: 'Tênis de corrida', value: 450, saved: 0, priority: 2, desc: 'Para treinar melhor na academia' },
+    { emoji: '📚', name: 'Curso Udemy', value: 90, saved: 0, priority: 3, desc: 'React Native avançado' }
+  ],
+  savings: 1250, savingsGoal: 2800,
+  workoutLog: { '0': 'done', '6': 'rest' }
+};
+
+// ========================================================
+// STORAGE
+// ========================================================
+function load() {
+  try {
+    const s = localStorage.getItem('stabHub2');
+    return s ? JSON.parse(s) : JSON.parse(JSON.stringify(DEFAULT));
+  } catch(e) { return JSON.parse(JSON.stringify(DEFAULT)); }
+}
+function save() { localStorage.setItem('stabHub2', JSON.stringify(D)); }
+let D = load();
+
+// ========================================================
+// HELPERS
+// ========================================================
+function fmt(n) { return Number(n).toLocaleString('pt-BR'); }
+function pct(a, b) { return b > 0 ? Math.round(a / b * 100) : 0; }
+function dayName() {
+  return ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'][new Date().getDay()];
+}
+function todayIdx() { const d = new Date().getDay(); return d === 0 ? 6 : d - 1; }
+function dayProgress() {
+  const items = [D.kafka && D.kaffa.done, ...D.tasks.map(t => t.state === 'done')];
+  const done = [D.kaffa.done, ...D.tasks.map(t => t.state === 'done')].filter(Boolean).length;
+  return { done, total: 1 + D.tasks.length };
+}
+
+const WORKOUTS = ['Peito','Costas','Perna','Ombro','Braço','Livre','Descanso'];
+const DAY_LETTERS = ['S','T','Q','Q','S','S','D'];
+
+// ========================================================
+// RENDER HOJE
+// ========================================================
+function renderHoje() {
+  const dp = dayProgress();
+  const dayPct = pct(dp.done, dp.total);
+
+  // Hero
+  document.getElementById('heroBlock').innerHTML = `
+    <div class="hero-top">
+      <div>
+        <div class="pill">${dayName()} · foco do dia</div>
+        <p>Complete as missões para avançar na rotina e ganhar moedas.</p>
+      </div>
+      <div class="pill">${dp.done}/${dp.total} feitas</div>
+    </div>
+    <div class="stats">
+      <article class="stat"><strong>${D.streak}</strong><span>Streak</span></article>
+      <article class="stat"><strong id="coinsStat">${fmt(D.coins)}</strong><span>Moedas</span></article>
+      <article class="stat"><strong>${dayPct}%</strong><span>Dia</span></article>
+    </div>`;
+
+  // Kaffa Card
+  const k = D.kaffa;
+  document.getElementById('kaffaCard').innerHTML = `
+    <div class="task-card ${k.done ? 'done' : ''}" style="border-color:${k.done ? 'rgba(51,177,111,.45)' : 'rgba(240,106,59,.4)'}">
+      <div class="task-top">
+        <div class="emoji-box" style="background:rgba(240,106,59,.18)">☕</div>
+        <div class="task-main">
+          <h3>${k.name}</h3>
+          <p>${k.desc}</p>
+          <div class="mini-row">
+            <span class="chip" style="background:rgba(240,106,59,.18);color:var(--accent)">+${fmt(k.reward)} moedas</span>
+            <span class="chip">${k.time}</span>
+          </div>
+        </div>
+        <div class="task-status">
+          <span class="tag ${k.done ? 'done' : 'accent'}">${k.done ? '✓ Feito' : 'Principal'}</span>
+        </div>
+      </div>
+      ${k.done
+        ? `<div class="note success" style="margin-top:12px">✓ Missão concluída! +${fmt(k.reward)} moedas ganhas.</div>`
+        : `<div class="task-actions"><button class="btn primary" onclick="completeKaffa()">Concluir Missão ✓</button></div>`}
+    </div>`;
+
+  // Task list
+  document.getElementById('taskList').innerHTML = D.tasks.map((t, i) => `
+    <div class="task-card ${t.state}">
+      <div class="task-top">
+        <div class="emoji-box">${t.emoji}</div>
+        <div class="task-main">
+          <h3>${t.title}</h3>
+          <p>${t.desc}</p>
+          <div class="mini-row"><span class="chip">+${t.reward} 🪙</span></div>
+        </div>
+        <div class="task-status">${stateTag(t.state)}</div>
+      </div>
+      <div class="task-actions">
+        ${t.state === 'idle'
+          ? `<button class="btn" onclick="setTask(${i},'failed')">✗ Não feito</button>
+             <button class="btn primary" onclick="setTask(${i},'done')">✓ Feito</button>`
+          : `<button class="btn" onclick="setTask(${i},'idle')" style="font-size:12px">↩ Desfazer</button>`}
+      </div>
+    </div>`).join('');
+
+  // Water panel
+  const cups = Array.from({length: D.water.goal}, (_, i) =>
+    `<div class="wcup ${i < D.water.current ? 'filled' : ''}" onclick="tapWater(${i})">💧</div>`
+  ).join('');
+  document.getElementById('waterPanel').innerHTML = `
+    <div class="panel-title">Água</div>
+    <div class="big-num">${D.water.current} / ${D.water.goal}</div>
+    <div class="sub-text">${(D.water.current * 0.5).toFixed(1)}L de ${(D.water.goal * 0.5).toFixed(1)}L</div>
+    <div class="progress"><span style="width:${pct(D.water.current, D.water.goal)}%"></span></div>
+    <div class="water-cups">${cups}</div>`;
+
+  // Workout panel
+  const idx = todayIdx();
+  document.getElementById('workoutPanel').innerHTML = `
+    <div class="panel-title">Treino de hoje</div>
+    <div class="big-num">${WORKOUTS[idx]}</div>
+    <div class="sub-text">${idx === 6 ? 'Dia de descanso' : 'Foco total hoje'}</div>
+    <div class="mini-row"><span class="chip">+35 moedas</span></div>`;
+
+  // Course panel
+  const active = D.courses.find(c => pct(c.done, c.total) < 100) || D.courses[0];
+  if (active) {
+    const p = pct(active.done, active.total);
+    document.getElementById('coursePanel').innerHTML = `
+      <div class="panel-title">Curso foco</div>
+      <div class="big-num">${p}%</div>
+      <div class="sub-text">${active.name}</div>
+      <div class="progress"><span style="width:${p}%"></span></div>`;
+  }
+
+  // Mini calendar
+  const todI = todayIdx();
+  document.getElementById('weekCalMini').innerHTML = DAY_LETTERS.map((d, i) => {
+    const st = D.workoutLog[String(i)] || '';
+    return `<div class="cal-day ${st} ${i === todI ? 'today' : ''}">
+      <span>${d}</span><span class="wt-label">${WORKOUTS[i].substring(0,3)}</span></div>`;
+  }).join('');
+}
+
+function stateTag(s) {
+  if (s === 'done')   return '<span class="tag done">✓ Feito</span>';
+  if (s === 'failed') return '<span class="tag failed">✗ Não</span>';
+  return '<span class="tag">Pendente</span>';
+}
+
+// ========================================================
+// RENDER ROTINA
+// ========================================================
+function renderRotina() {
+  document.getElementById('routineTimeline').innerHTML = D.routine.map(r => `
+    <article class="t-block" style="--block-color:${r.color}">
+      <div class="t-time">${r.time}</div>
+      <div><h3>${r.title}</h3><p>${r.desc}</p></div>
+    </article>`).join('');
+
+  const todI = todayIdx();
+  document.getElementById('workoutCal').innerHTML = DAY_LETTERS.map((d, i) => {
+    const st = D.workoutLog[String(i)] || '';
+    return `<div class="cal-day ${st} ${i === todI ? 'today' : ''}" onclick="cycleWorkout('${i}')">
+      <span>${d}</span><span class="wt-label">${WORKOUTS[i].substring(0,3)}</span></div>`;
+  }).join('');
+}
+
+function cycleWorkout(key) {
+  const states = ['', 'done', 'missed', 'rest'];
+  const cur = D.workoutLog[key] || '';
+  const next = states[(states.indexOf(cur) + 1) % states.length];
+  if (next === '') delete D.workoutLog[key]; else D.workoutLog[key] = next;
+  save(); renderRotina();
+}
+
+// ========================================================
+// RENDER CURSOS
+// ========================================================
+function renderCursos() {
+  document.getElementById('coursesList').innerHTML = D.courses.length
+    ? D.courses.map((c, i) => {
+        const p = pct(c.done, c.total);
+        return `<div class="task-card">
+          <div class="task-top">
+            <div class="emoji-box">${c.emoji}</div>
+            <div class="task-main">
+              <h3>${c.name}</h3>
+              <p>${c.total} aulas · +${c.cpp} moedas/aula</p>
+              <div class="progress"><span style="width:${p}%"></span></div>
+              <div class="mini-row">
+                <span class="chip">${c.done}/${c.total} aulas</span>
+                <span class="chip">+${fmt(c.done * c.cpp)} 🪙 ganhos</span>
+              </div>
+            </div>
+            <div class="task-status"><span class="course-pct">${p}%</span></div>
+          </div>
+          <div class="task-actions">
+            <button class="btn" onclick="completeLesson(${i})">+${c.cpp} 🪙 Aula</button>
+          </div>
+        </div>`;
+      }).join('')
+    : `<div class="card"><p class="empty-msg">Nenhum curso cadastrado. Adicione no Admin.</p></div>`;
+}
+
+// ========================================================
+// RENDER LOJA
+// ========================================================
+function renderLoja() {
+  document.getElementById('shopBalance').textContent = `🪙 ${fmt(D.coins)}`;
+  document.getElementById('shopList').innerHTML = D.shop.length
+    ? D.shop.map((s, i) => `
+        <div class="shop-card">
+          <span class="shop-emoji">${s.emoji}</span>
+          <div class="shop-name">${s.name}</div>
+          <div class="shop-price">🪙 ${fmt(s.price)}</div>
+          <button class="btn primary btn-full" onclick="buyItem(${i})">Comprar</button>
+        </div>`).join('')
+    : `<div style="grid-column:1/-1"><p class="empty-msg">Loja vazia. Adicione itens no Admin.</p></div>`;
+
+  document.getElementById('inventoryList').innerHTML = D.inventory.length
+    ? D.inventory.map((item, i) => `
+        <div class="inv-card">
+          <span style="font-size:32px;display:block;margin-bottom:8px">${item.emoji}</span>
+          <div style="font-weight:700;font-size:13px;margin-bottom:3px">${item.name}</div>
+          <div style="font-size:10px;color:var(--muted);margin-bottom:10px">Comprado: ${item.date}</div>
+          <button class="btn primary btn-full" onclick="useItem(${i})">Usar</button>
+        </div>`).join('')
+    : `<div style="grid-column:1/-1"><p class="empty-msg">Baú vazio.</p></div>`;
+}
+
+// ========================================================
+// RENDER METAS
+// ========================================================
+function renderMetas() {
+  const sp = pct(D.savings, D.savingsGoal);
+  document.getElementById('savingsCard').innerHTML = `
+    <div style="margin-bottom:12px">
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Guardado este mês</div>
+      <div style="font-family:'Bebas Neue';font-size:44px;color:var(--accent);line-height:1">R$ ${fmt(D.savings)}</div>
+    </div>
+    <div class="progress"><span style="width:${sp}%"></span></div>
+    <p style="margin-top:8px;font-size:12px;color:var(--muted)">
+      Meta: R$ ${fmt(D.savingsGoal)} &nbsp;·&nbsp; Falta R$ ${fmt(Math.max(0, D.savingsGoal - D.savings))}
+    </p>`;
+
+  const pColors = ['var(--danger)', 'var(--accent)', 'var(--success)'];
+  const pBg = ['rgba(219,91,86,.16)', 'rgba(240,106,59,.16)', 'rgba(51,177,111,.16)'];
+  const pLabels = ['🔥 Prioridade 1', '⭐ Prioridade 2', '📌 Prioridade 3'];
+
+  document.getElementById('goalsList').innerHTML = D.goals.length
+    ? [...D.goals].sort((a, b) => a.priority - b.priority).map(g => {
+        const p = pct(g.saved, g.value);
+        const pi = (g.priority || 1) - 1;
+        return `<div class="goal-card">
+          <div class="goal-head">
+            <span class="goal-name">${g.emoji} ${g.name}</span>
+            <span class="goal-val" style="color:${pColors[pi]}">R$ ${fmt(g.value)}</span>
+          </div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:8px">${g.desc || ''}</p>
+          <div class="mini-row">
+            <span class="chip" style="background:${pBg[pi]};color:${pColors[pi]}">${pLabels[pi]}</span>
+            <span class="chip">Falta R$ ${fmt(Math.max(0, g.value - g.saved))}</span>
+          </div>
+          <div class="progress"><span style="width:${p}%;background:${pColors[pi]}"></span></div>
+        </div>`;
+      }).join('')
+    : `<div class="card"><p class="empty-msg">Sem metas. Adicione no Admin.</p></div>`;
+}
+
+// ========================================================
+// RENDER ADMIN
+// ========================================================
+function renderAdmin() {
+  // Água
+  document.getElementById('aWaterGoal').value = D.water.goal;
+
+  // Kaffa
+  document.getElementById('aKaffaName').value = D.kaffa.name;
+  document.getElementById('aKaffaDesc').value = D.kaffa.desc;
+  document.getElementById('aKaffaReward').value = D.kaffa.reward;
+  document.getElementById('aKaffaTime').value = D.kaffa.time;
+
+  // Tasks
+  document.getElementById('aTaskList').innerHTML = D.tasks.length
+    ? D.tasks.map((t, i) => `
+        <div class="a-item">
+          <span class="a-item-icon">${t.emoji}</span>
+          <div class="a-item-info">
+            <strong>${t.title}</strong>
+            <span>+${t.reward} moedas · ${t.desc}</span>
+          </div>
+          <div class="a-btns">
+            <button class="icon-btn del" title="Deletar" onclick="deleteTask(${i})">🗑</button>
+          </div>
+        </div>`).join('')
+    : `<p class="empty-msg">Nenhuma missão.</p>`;
+
+  // Routine
+  document.getElementById('aRoutineList').innerHTML = D.routine.length
+    ? D.routine.map((r, i) => `
+        <div class="a-item">
+          <span style="font-family:'Bebas Neue';font-size:14px;letter-spacing:.05em;color:var(--muted);width:50px;flex-shrink:0">${r.time}</span>
+          <div class="a-item-info">
+            <strong>${r.title}</strong>
+            <span>${r.desc}</span>
+          </div>
+          <div class="a-btns">
+            <button class="icon-btn del" title="Deletar" onclick="deleteRoutine(${i})">🗑</button>
+          </div>
+        </div>`).join('')
+    : `<p class="empty-msg">Nenhum bloco de rotina.</p>`;
+
+  // Courses
+  document.getElementById('aCourseList').innerHTML = D.courses.length
+    ? D.courses.map((c, i) => `
+        <div class="a-item">
+          <span class="a-item-icon">${c.emoji}</span>
+          <div class="a-item-info">
+            <strong>${c.name}</strong>
+            <span>${c.done}/${c.total} aulas · ${pct(c.done, c.total)}%</span>
+          </div>
+          <div class="a-btns">
+            <button class="icon-btn del" title="Deletar" onclick="deleteCourse(${i})">🗑</button>
+          </div>
+        </div>`).join('')
+    : `<p class="empty-msg">Nenhum curso.</p>`;
+
+  // Shop
+  document.getElementById('aShopList').innerHTML = D.shop.length
+    ? D.shop.map((s, i) => `
+        <div class="a-item">
+          <span class="a-item-icon">${s.emoji}</span>
+          <div class="a-item-info">
+            <strong>${s.name}</strong>
+            <span>🪙 ${fmt(s.price)}</span>
+          </div>
+          <div class="a-btns">
+            <button class="icon-btn del" title="Deletar" onclick="deleteShopItem(${i})">🗑</button>
+          </div>
+        </div>`).join('')
+    : `<p class="empty-msg">Nenhum item na loja.</p>`;
+
+  // Goals
+  document.getElementById('aSavingsGoal').value = D.savingsGoal;
+  document.getElementById('aSavingsCurrent').value = D.savings;
+  document.getElementById('aGoalList').innerHTML = D.goals.length
+    ? D.goals.map((g, i) => `
+        <div class="a-item">
+          <span class="a-item-icon">${g.emoji}</span>
+          <div class="a-item-info">
+            <strong>${g.name}</strong>
+            <span>R$ ${fmt(g.value)} · Prioridade ${g.priority}</span>
+          </div>
+          <div class="a-btns">
+            <button class="icon-btn del" title="Deletar" onclick="deleteGoal(${i})">🗑</button>
+          </div>
+        </div>`).join('')
+    : `<p class="empty-msg">Sem metas.</p>`;
+
+  // Vacation toggle
+  const on = D.vacation;
+  document.getElementById('vacThumb').style.left = on ? '24px' : '4px';
+  document.getElementById('vacThumb').style.background = on ? 'var(--success)' : 'var(--muted)';
+}
+
+function toggleAccordion(id) {
+  const body = document.getElementById('body-' + id);
+  const arr = document.getElementById('arr-' + id);
+  const wasOpen = body.classList.contains('open');
+  body.classList.toggle('open');
+  arr.classList.toggle('open');
+  if (!wasOpen) renderAdmin();
+}
+
+// ========================================================
+// ACTIONS — HOJE
+// ========================================================
+function completeKaffa() {
+  if (D.kaffa.done) return;
+  D.kaffa.done = true;
+  D.coins += D.kaffa.reward;
+  save(); renderHoje();
+}
+
+function setTask(i, state) {
+  const prev = D.tasks[i].state;
+  if (prev === state) return;
+  if (state === 'done' && prev !== 'done') D.coins += D.tasks[i].reward;
+  if (state !== 'done' && prev === 'done') D.coins = Math.max(0, D.coins - D.tasks[i].reward);
+  D.tasks[i].state = state;
+  save(); renderHoje();
+}
+
+function tapWater(i) {
+  D.water.current = i < D.water.current ? i : i + 1;
+  D.water.current = Math.min(D.water.current, D.water.goal);
+  save(); renderHoje();
+}
+
+// ========================================================
+// ACTIONS — CURSOS
+// ========================================================
+function completeLesson(i) {
+  if (D.courses[i].done >= D.courses[i].total) { alert('Curso já concluído! 🎉'); return; }
+  D.courses[i].done++;
+  D.coins += D.courses[i].cpp;
+  save(); renderCursos();
+  const cStat = document.getElementById('coinsStat');
+  if (cStat) cStat.textContent = fmt(D.coins);
+}
+
+// ========================================================
+// ACTIONS — LOJA
+// ========================================================
+function buyItem(i) {
+  const item = D.shop[i];
+  if (D.coins < item.price) { alert('❌ Moedas insuficientes!'); return; }
+  D.coins -= item.price;
+  const now = new Date();
+  D.inventory.push({ emoji: item.emoji, name: item.name, date: `${now.getDate()}/${now.getMonth()+1}` });
+  save(); renderLoja();
+}
+function useItem(i) {
+  if (confirm(`Usar "${D.inventory[i].name}"? Ele sairá do baú.`)) {
+    D.inventory.splice(i, 1); save(); renderLoja();
+  }
+}
+function toggleBau() {
+  const b = document.getElementById('bauSection');
+  b.style.display = b.style.display === 'none' ? 'block' : 'none';
+}
+
+// ========================================================
+// ADMIN SAVE ACTIONS
+// ========================================================
+function saveWaterGoal() {
+  const v = parseInt(document.getElementById('aWaterGoal').value);
+  if (!v || v < 1 || v > 20) { alert('Valor inválido (1-20)'); return; }
+  D.water.goal = v;
+  if (D.water.current > v) D.water.current = v;
+  save(); alert('✓ Meta de água salva!');
+}
+
+function saveKaffa() {
+  const name = document.getElementById('aKaffaName').value.trim();
+  const desc = document.getElementById('aKaffaDesc').value.trim();
+  const reward = parseInt(document.getElementById('aKaffaReward').value);
+  const time = document.getElementById('aKaffaTime').value.trim();
+  if (!name) { alert('Nome é obrigatório!'); return; }
+  D.kaffa = { ...D.kaffa, name, desc, reward: reward || D.kaffa.reward, time: time || D.kaffa.time };
+  save(); alert('✓ Missão Kaffa atualizada!');
+}
+
+function addTask() {
+  const emoji = document.getElementById('nTEmoji').value.trim() || '🎯';
+  const title = document.getElementById('nTTitle').value.trim();
+  const desc  = document.getElementById('nTDesc').value.trim();
+  const reward = parseInt(document.getElementById('nTReward').value) || 20;
+  if (!title) { alert('Título é obrigatório!'); return; }
+  D.tasks.push({ emoji, title, desc, reward, state: 'idle' });
+  save();
+  ['nTEmoji','nTTitle','nTDesc','nTReward'].forEach(id => document.getElementById(id).value = '');
+  renderAdmin();
+}
+function deleteTask(i) {
+  if (!confirm(`Deletar "${D.tasks[i].title}"?`)) return;
+  D.tasks.splice(i, 1); save(); renderAdmin();
+}
+
+function addRoutine() {
+  const time  = document.getElementById('nRTime').value.trim();
+  const title = document.getElementById('nRTitle').value.trim();
+  const desc  = document.getElementById('nRDesc').value.trim();
+  const color = document.getElementById('nRColor').value.trim() || 'var(--accent)';
+  if (!time || !title) { alert('Horário e título são obrigatórios!'); return; }
+  D.routine.push({ time, title, desc, color });
+  D.routine.sort((a, b) => a.time.localeCompare(b.time));
+  save();
+  ['nRTime','nRTitle','nRDesc','nRColor'].forEach(id => document.getElementById(id).value = '');
+  renderAdmin();
+}
+function deleteRoutine(i) {
+  if (!confirm(`Deletar "${D.routine[i].title}"?`)) return;
+  D.routine.splice(i, 1); save(); renderAdmin();
+}
+
+function addCourse() {
+  const emoji = document.getElementById('nCEmoji').value.trim() || '📖';
+  const name  = document.getElementById('nCName').value.trim();
+  const total = parseInt(document.getElementById('nCTotal').value) || 0;
+  const done  = parseInt(document.getElementById('nCDone').value) || 0;
+  if (!name || total <= 0) { alert('Nome e total de aulas são obrigatórios!'); return; }
+  D.courses.push({ emoji, name, total, done: Math.min(done, total), cpp: 20 });
+  save();
+  ['nCEmoji','nCName','nCTotal','nCDone'].forEach(id => document.getElementById(id).value = '');
+  renderAdmin();
+}
+function deleteCourse(i) {
+  if (!confirm(`Deletar "${D.courses[i].name}"?`)) return;
+  D.courses.splice(i, 1); save(); renderAdmin();
+}
+
+function addShopItem() {
+  const emoji = document.getElementById('nSEmoji').value.trim() || '🎁';
+  const name  = document.getElementById('nSName').value.trim();
+  const price = parseInt(document.getElementById('nSPrice').value) || 0;
+  if (!name || price <= 0) { alert('Nome e preço são obrigatórios!'); return; }
+  D.shop.push({ emoji, name, price });
+  save();
+  ['nSEmoji','nSName','nSPrice'].forEach(id => document.getElementById(id).value = '');
+  renderAdmin();
+}
+function deleteShopItem(i) {
+  if (!confirm(`Deletar "${D.shop[i].name}"?`)) return;
+  D.shop.splice(i, 1); save(); renderAdmin();
+}
+
+function saveSavings() {
+  const goal = parseFloat(document.getElementById('aSavingsGoal').value);
+  const cur  = parseFloat(document.getElementById('aSavingsCurrent').value);
+  if (goal > 0) D.savingsGoal = goal;
+  if (cur >= 0) D.savings = cur;
+  save(); alert('✓ Poupança atualizada!');
+}
+function addGoal() {
+  const emoji = document.getElementById('nGEmoji').value.trim() || '🎯';
+  const name  = document.getElementById('nGName').value.trim();
+  const value = parseFloat(document.getElementById('nGValue').value) || 0;
+  const priority = parseInt(document.getElementById('nGPriority').value) || 1;
+  if (!name || value <= 0) { alert('Nome e valor são obrigatórios!'); return; }
+  D.goals.push({ emoji, name, value, saved: 0, priority, desc: '' });
+  save();
+  ['nGEmoji','nGName','nGValue'].forEach(id => document.getElementById(id).value = '');
+  renderAdmin();
+}
+function deleteGoal(i) {
+  if (!confirm(`Deletar "${D.goals[i].name}"?`)) return;
+  D.goals.splice(i, 1); save(); renderAdmin();
+}
+
+function toggleVacation() {
+  D.vacation = !D.vacation;
+  save();
+  const on = D.vacation;
+  document.getElementById('vacThumb').style.left = on ? '24px' : '4px';
+  document.getElementById('vacThumb').style.background = on ? 'var(--success)' : 'var(--muted)';
+}
+
+function resetDay() {
+  if (!confirm('Resetar o dia? Missões voltam para pendente e água vai pra zero.')) return;
+  D.kaffa.done = false;
+  D.tasks.forEach(t => t.state = 'idle');
+  D.water.current = 0;
+  save(); renderHoje(); alert('✓ Dia resetado!');
+}
+
+function resetAll() {
+  if (!confirm('⚠️ Isso apaga TODOS os dados. Tem certeza?')) return;
+  if (!confirm('Última chance — tem certeza mesmo?')) return;
+  localStorage.removeItem('stabHub2');
+  D = JSON.parse(JSON.stringify(DEFAULT));
+  save(); location.reload();
+}
+
+// ========================================================
+// NAVIGATION
+// ========================================================
+function showTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+
+  if (id === 'hoje')   renderHoje();
+  if (id === 'rotina') renderRotina();
+  if (id === 'cursos') renderCursos();
+  if (id === 'loja')   renderLoja();
+  if (id === 'metas')  renderMetas();
+  if (id === 'admin')  renderAdmin();
+}
+
+// Theme
+document.getElementById('themeBtn').addEventListener('click', function() {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  this.textContent = next === 'dark' ? '☾' : '☼';
+});
+
+// ========================================================
+// INIT
+// ========================================================
+renderHoje();
+</script>
+</body>
+</html>
