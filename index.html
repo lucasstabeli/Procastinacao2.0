@@ -575,19 +575,20 @@
 // DEFAULT DATA
 // ========================================================
 const DEFAULT = {
-  coins: 420, streak: 7, vacation: false,
-  water: { current: 4, goal: 6 },
-  kaffa: { name: 'Missão Kaffa', desc: 'Estágio confirmado? A missão mais valiosa do dia.', reward: 1000, time: '08:00', done: false },
+  _v: 3,
+  coins: 0, streak: 0, vacation: false,
+  water: { current: 0, goal: 6 },
+  kaffa: { name: 'Missão Principal', desc: 'Descreva sua missão mais importante do dia.', reward: 100, penalty: 0, time: '08:00', done: false },
   tasks: [
-    { emoji: '⏰', title: 'Acordar cedo', desc: 'Sem soneca, levanta direto.', reward: 30, penalty: 15, state: 'done' },
-    { emoji: '🏋️', title: 'Treino do dia', desc: 'Peito + Tríceps + 20 min cardio.', reward: 35, penalty: 20, state: 'idle' },
-    { emoji: '💻', title: 'Estudo / Projeto', desc: 'Bloco profundo de código.', reward: 25, penalty: 15, state: 'idle' },
-    { emoji: '💧', title: 'Meta de água', desc: 'Beber todos os copos do dia.', reward: 20, penalty: 10, state: 'done' }
+    { emoji: '⏰', title: 'Acordar cedo', desc: 'Sem soneca, levanta direto.', reward: 30, penalty: 15, state: 'idle' },
+    { emoji: '🏋️', title: 'Treino do dia', desc: 'Foco total no treino.', reward: 35, penalty: 20, state: 'idle' },
+    { emoji: '💻', title: 'Estudo / Projeto', desc: 'Bloco profundo de estudo.', reward: 25, penalty: 15, state: 'idle' },
+    { emoji: '💧', title: 'Meta de água', desc: 'Beber todos os copos do dia.', reward: 20, penalty: 10, state: 'idle' }
   ],
   courses: [
-    { emoji: '🐍', name: 'Python Avançado', total: 313, done: 141, cpp: 20 },
-    { emoji: '💻', name: 'C# .NET', total: 278, done: 64, cpp: 20 },
-    { emoji: '🗄️', name: 'SQL e Banco de Dados', total: 120, done: 80, cpp: 20 }
+    { emoji: '🐍', name: 'Python Avançado', total: 313, done: 0, cpp: 20 },
+    { emoji: '💻', name: 'C# .NET', total: 278, done: 0, cpp: 20 },
+    { emoji: '🗄️', name: 'SQL e Banco de Dados', total: 120, done: 0, cpp: 20 }
   ],
   routine: [
     { time: '06:30', title: 'Acordar', desc: 'Sem soneca — água imediatamente. Começo forte.', color: 'var(--purple)' },
@@ -604,17 +605,14 @@ const DEFAULT = {
     { emoji: '🛹', name: 'Andar de Skate', price: 500 },
     { emoji: '🍻', name: 'Sair com Amigos', price: 500 }
   ],
-  inventory: [
-    { emoji: '🏀', name: 'Jogar Basquete', date: '28/03' },
-    { emoji: '🎮', name: 'Video Game', date: '25/03' }
-  ],
+  inventory: [],
   goals: [
-    { emoji: '🎧', name: 'Fone novo', value: 350, saved: 230, priority: 1, desc: 'Urgente pro trabalho e estudo' },
+    { emoji: '🎧', name: 'Fone novo', value: 350, saved: 0, priority: 1, desc: 'Urgente pro trabalho e estudo' },
     { emoji: '👟', name: 'Tênis de corrida', value: 450, saved: 0, priority: 2, desc: 'Para treinar melhor na academia' },
     { emoji: '📚', name: 'Curso Udemy', value: 90, saved: 0, priority: 3, desc: 'React Native avançado' }
   ],
-  savings: 1250, savingsGoal: 2800,
-  workoutLog: { '0': 'done', '6': 'rest' }
+  savings: 0, savingsGoal: 2800,
+  workoutLog: {}
 };
 
 // ========================================================
@@ -622,11 +620,15 @@ const DEFAULT = {
 // ========================================================
 function load() {
   try {
-    const s = localStorage.getItem('stabHub2');
-    return s ? JSON.parse(s) : JSON.parse(JSON.stringify(DEFAULT));
+    const s = localStorage.getItem('stabHub3');
+    if (!s) return JSON.parse(JSON.stringify(DEFAULT));
+    const parsed = JSON.parse(s);
+    // Se versão diferente, começa do zero (mas mantém a key nova)
+    if (parsed._v !== DEFAULT._v) return JSON.parse(JSON.stringify(DEFAULT));
+    return parsed;
   } catch(e) { return JSON.parse(JSON.stringify(DEFAULT)); }
 }
-function save() { localStorage.setItem('stabHub2', JSON.stringify(D)); }
+function save() { localStorage.setItem('stabHub3', JSON.stringify(D)); }
 let D = load();
 
 // ========================================================
@@ -1192,7 +1194,7 @@ function resetDay() {
 function resetAll() {
   if (!confirm('⚠️ Isso apaga TODOS os dados. Tem certeza?')) return;
   if (!confirm('Última chance — tem certeza mesmo?')) return;
-  localStorage.removeItem('stabHub2');
+  localStorage.removeItem('stabHub3');
   D = JSON.parse(JSON.stringify(DEFAULT));
   save(); location.reload();
 }
