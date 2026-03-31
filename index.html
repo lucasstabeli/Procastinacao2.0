@@ -406,7 +406,7 @@
         <div class="admin-body" id="body-routine">
           <div id="aRoutineList" style="margin-top:12px"></div>
           <div class="admin-form">
-            <span class="form-label">Adicionar bloco de horário</span>
+            <span class="form-label" id="nRFormLabel">Adicionar bloco de horário</span>
             <div class="f-row">
               <input type="text" class="f-input w-md" id="nRTime" placeholder="09:00">
               <input type="text" class="f-input" id="nRTitle" placeholder="Título">
@@ -414,9 +414,13 @@
             <div class="f-row">
               <input type="text" class="f-input" id="nRDesc" placeholder="Descrição">
             </div>
-            <div class="f-row">
-              <input type="text" class="f-input" id="nRColor" placeholder="Cor (ex: #f3b63f ou var(--accent))">
-              <button class="btn primary btn-sm" onclick="addRoutine()">+ Adicionar</button>
+            <div class="f-row" style="align-items:center">
+              <div id="nRColorSwatch" style="width:32px;height:32px;border-radius:9px;border:1px solid var(--line);flex-shrink:0;background:var(--accent);transition:background .2s"></div>
+              <input type="text" class="f-input" id="nRColor" placeholder="Cor: roxo, azul, verde, laranja, vermelho..." oninput="updateColorPreview()">
+              <button class="btn primary btn-sm" id="nRSubmitBtn" onclick="saveRoutineForm()">+ Adicionar</button>
+            </div>
+            <div id="nRCancelRow" style="display:none;margin-top:8px">
+              <button class="btn btn-sm btn-full" onclick="cancelEditRoutine()">✕ Cancelar edição</button>
             </div>
           </div>
         </div>
@@ -921,12 +925,14 @@ function renderAdmin() {
   document.getElementById('aRoutineList').innerHTML = D.routine.length
     ? D.routine.map((r, i) => `
         <div class="a-item">
-          <span style="font-family:'Bebas Neue';font-size:14px;letter-spacing:.05em;color:var(--muted);width:50px;flex-shrink:0">${r.time}</span>
+          <div style="width:10px;height:36px;border-radius:4px;background:${r.color};flex-shrink:0"></div>
+          <span style="font-family:'Bebas Neue';font-size:14px;letter-spacing:.05em;color:var(--muted);width:46px;flex-shrink:0">${r.time}</span>
           <div class="a-item-info">
             <strong>${r.title}</strong>
             <span>${r.desc}</span>
           </div>
           <div class="a-btns">
+            <button class="icon-btn" title="Editar" onclick="editRoutine(${i})">✏️</button>
             <button class="icon-btn del" title="Deletar" onclick="deleteRoutine(${i})">🗑</button>
           </div>
         </div>`).join('')
@@ -1104,20 +1110,72 @@ function deleteTask(i) {
   D.tasks.splice(i, 1); save(); renderAdmin();
 }
 
-function addRoutine() {
+// Mapa de nomes de cor (PT e EN) → valor CSS
+const COLOR_MAP = {
+  roxo:'var(--purple)', purple:'var(--purple)',
+  laranja:'var(--accent)', orange:'var(--accent)',
+  azul:'var(--blue)', blue:'var(--blue)',
+  verde:'var(--success)', green:'var(--success)',
+  vermelho:'var(--danger)', red:'var(--danger)',
+  amarelo:'#f3b63f', yellow:'#f3b63f',
+  rosa:'#e879a0', pink:'#e879a0',
+  cinza:'var(--muted)', gray:'var(--muted)', grey:'var(--muted)',
+  branco:'#ffffff', white:'#ffffff',
+};
+function resolveColor(raw) {
+  const key = raw.trim().toLowerCase();
+  return COLOR_MAP[key] || raw.trim() || 'var(--accent)';
+}
+function updateColorPreview() {
+  const raw = document.getElementById('nRColor').value;
+  const resolved = resolveColor(raw);
+  document.getElementById('nRColorSwatch').style.background = resolved;
+}
+
+let editingRoutineIdx = -1;
+
+function editRoutine(i) {
+  const r = D.routine[i];
+  editingRoutineIdx = i;
+  document.getElementById('nRTime').value  = r.time;
+  document.getElementById('nRTitle').value = r.title;
+  document.getElementById('nRDesc').value  = r.desc;
+  document.getElementById('nRColor').value = r.color;
+  updateColorPreview();
+  document.getElementById('nRFormLabel').textContent = `✏️ Editando: ${r.title}`;
+  document.getElementById('nRSubmitBtn').textContent = '💾 Salvar edição';
+  document.getElementById('nRCancelRow').style.display = 'block';
+  // Scroll até o formulário
+  document.getElementById('nRTime').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  document.getElementById('nRTime').focus();
+}
+function cancelEditRoutine() {
+  editingRoutineIdx = -1;
+  ['nRTime','nRTitle','nRDesc','nRColor'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('nRColorSwatch').style.background = 'var(--accent)';
+  document.getElementById('nRFormLabel').textContent = 'Adicionar bloco de horário';
+  document.getElementById('nRSubmitBtn').textContent = '+ Adicionar';
+  document.getElementById('nRCancelRow').style.display = 'none';
+}
+function saveRoutineForm() {
   const time  = document.getElementById('nRTime').value.trim();
   const title = document.getElementById('nRTitle').value.trim();
   const desc  = document.getElementById('nRDesc').value.trim();
-  const color = document.getElementById('nRColor').value.trim() || 'var(--accent)';
+  const color = resolveColor(document.getElementById('nRColor').value);
   if (!time || !title) { alert('Horário e título são obrigatórios!'); return; }
-  D.routine.push({ time, title, desc, color });
+  if (editingRoutineIdx >= 0) {
+    D.routine[editingRoutineIdx] = { time, title, desc, color };
+  } else {
+    D.routine.push({ time, title, desc, color });
+  }
   D.routine.sort((a, b) => a.time.localeCompare(b.time));
   save();
-  ['nRTime','nRTitle','nRDesc','nRColor'].forEach(id => document.getElementById(id).value = '');
+  cancelEditRoutine();
   renderAdmin();
 }
 function deleteRoutine(i) {
   if (!confirm(`Deletar "${D.routine[i].title}"?`)) return;
+  if (editingRoutineIdx === i) cancelEditRoutine();
   D.routine.splice(i, 1); save(); renderAdmin();
 }
 
