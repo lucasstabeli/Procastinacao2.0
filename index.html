@@ -3,7 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>Stabeli Hub</title>
+  <title>Hub da Rotina</title>
+  <!-- PWA -->
+  <meta name="theme-color" content="#0f0f10">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Hub da Rotina">
+  <link rel="apple-touch-icon" id="appIconLink" href="">
+  <link rel="icon" type="image/svg+xml" id="faviconLink" href="">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
@@ -81,8 +88,8 @@
     .swipe-card{position:relative;cursor:grab;touch-action:pan-y;user-select:none}
     .swipe-card:active{cursor:grabbing}
     .sh-done,.sh-fail{position:absolute;top:50%;transform:translateY(-50%);font-size:12px;font-weight:800;letter-spacing:.03em;opacity:0;pointer-events:none;z-index:2;border-radius:8px;padding:4px 10px;white-space:nowrap}
-    .sh-done{left:14px;color:var(--success);background:var(--success-soft)}
-    .sh-fail{right:14px;color:var(--danger);background:var(--danger-soft)}
+    .sh-done{right:14px;color:var(--success);background:var(--success-soft)}
+    .sh-fail{left:14px;color:var(--danger);background:var(--danger-soft)}
     .swipe-hint-row{text-align:center;margin-top:10px;padding-top:8px;border-top:1px solid var(--line)}
     .penalty-chip{color:var(--danger)!important}
     .task-top{display:flex;gap:14px;align-items:flex-start}
@@ -225,17 +232,20 @@
 
   <header class="topbar">
     <div class="brand">
-      <div class="logo">
+      <div class="logo" id="appLogoEl">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M5 18V6l7-2 7 2v12l-7 2-7-2Z"/><path d="M12 4v16"/><path d="M5 9.5 12 12l7-2.5"/>
         </svg>
       </div>
       <div>
-        <div class="eyebrow">Stabeli system</div>
+        <div class="eyebrow">Sistema de rotina</div>
         <h1>Hub da rotina</h1>
       </div>
     </div>
-    <button class="theme-btn" id="themeBtn" aria-label="Alternar tema">☾</button>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="theme-btn" onclick="showTab('admin',null)" aria-label="Admin" title="Administração" style="font-size:18px">⚙️</button>
+      <button class="theme-btn" id="themeBtn" aria-label="Alternar tema">☾</button>
+    </div>
   </header>
 
   <!-- ===== HOJE ===== -->
@@ -243,7 +253,7 @@
     <div class="hero" id="heroBlock"></div>
     <div class="d-grid">
       <div>
-        <div class="section-head"><h2>Missão principal</h2><span>kaffa</span></div>
+        <div class="section-head"><h2>Super missão</h2><span>👑 principal do dia</span></div>
         <div id="kaffaCard"></div>
         <div class="section-head" style="margin-top:16px"><h2>Missões do dia</h2><span>diárias</span></div>
         <div class="stack" id="taskList"></div>
@@ -311,10 +321,34 @@
 
   <!-- ===== METAS ===== -->
   <section class="section" id="metas">
-    <div class="section-head"><h2>Metas financeiras</h2><span>guardar &amp; comprar</span></div>
-    <div class="card" style="margin-bottom:16px" id="savingsCard"></div>
-    <div class="section-head"><h2>Lista de compras</h2><span>prioridades</span></div>
+    <div class="section-head"><h2>Cofrinho</h2><span>🐷 poupança</span></div>
+    <div id="cofrinhoCard"></div>
+
+    <div class="section-head" style="margin-top:18px"><h2>Resumo mensal</h2><span>entradas &amp; saídas</span></div>
+    <div id="resumoCard"></div>
+
+    <div class="section-head" style="margin-top:18px"><h2>Lista de compras</h2><span>prioridades</span></div>
     <div class="stack" id="goalsList"></div>
+  </section>
+
+  <!-- ===== DIETA ===== -->
+  <section class="section" id="dieta">
+    <div class="section-head"><h2>Alimentação</h2><span>em breve</span></div>
+    <div class="card" style="text-align:center;padding:32px 20px">
+      <div style="font-size:52px;margin-bottom:12px">🥗</div>
+      <h3 style="font-size:18px;margin-bottom:8px">Aba em construção</h3>
+      <p style="font-size:13px;color:var(--muted);line-height:1.6;max-width:28ch;margin:0 auto">Em breve você vai poder acompanhar sua dieta e metas de alimentação aqui. Por enquanto, use para anotar suas metas com a nutricionista.</p>
+    </div>
+    <div class="section-head" style="margin-top:20px"><h2>Minhas metas</h2><span>anotações</span></div>
+    <div class="stack" id="dietaNotes"></div>
+    <div class="card" style="margin-top:12px">
+      <span class="form-label" style="display:block;margin-bottom:10px">Adicionar anotação</span>
+      <div class="f-row">
+        <input type="text" class="f-input w-sm" id="dNEmoji" placeholder="🥦">
+        <input type="text" class="f-input" id="dNText" placeholder="Ex: Comer 150g proteína/dia">
+        <button class="btn primary btn-sm" onclick="addDietNote()">+</button>
+      </div>
+    </div>
   </section>
 
   <!-- ===== ADMIN ===== -->
@@ -357,8 +391,7 @@
             <input type="text" class="f-input" id="aKaffaDesc" placeholder="Descrição">
             <div class="f-row">
               <input type="number" class="f-input" id="aKaffaReward" placeholder="🪙 Recompensa">
-              <input type="number" class="f-input" id="aKaffaPenalty" placeholder="⚠️ Penalidade">
-              <input type="text" class="f-input w-md" id="aKaffaTime" placeholder="Horário (ex: 08:00)">
+              <input type="number" class="f-input" id="aKaffaPenalty" placeholder="⚠️ Penalidade se falhar">
             </div>
             <button class="btn primary btn-full" onclick="saveKaffa()">Salvar Missão</button>
           </div>
@@ -486,10 +519,18 @@
         </div>
         <div class="admin-body" id="body-goals">
           <div style="margin-top:14px">
-            <span class="form-label">Poupança mensal</span>
+            <span class="form-label">🐷 Cofrinho</span>
             <div class="f-row">
-              <input type="number" class="f-input" id="aSavingsGoal" placeholder="Meta mensal R$">
               <input type="number" class="f-input" id="aSavingsCurrent" placeholder="Guardado R$">
+              <input type="number" class="f-input" id="aSavingsGoal" placeholder="Meta R$">
+            </div>
+            <span class="form-label" style="margin-top:10px">📊 Resumo mensal</span>
+            <div class="f-row">
+              <input type="number" class="f-input" id="aSavingsIncome" placeholder="Entradas R$">
+              <input type="number" class="f-input" id="aSavingsExpense" placeholder="Saídas R$">
+            </div>
+            <div class="f-row">
+              <input type="number" class="f-input" id="aSavingsRate" placeholder="Rendimento % a.m. (ex: 0.9)">
               <button class="btn primary btn-sm" onclick="saveSavings()">Salvar</button>
             </div>
           </div>
@@ -525,6 +566,17 @@
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn danger btn-sm" onclick="resetDay()">🔄 Resetar Dia</button>
           <button class="btn danger btn-sm" onclick="resetAll()">🗑 Apagar Tudo</button>
+        </div>
+      </div>
+
+      <!-- Notificações -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:700;font-size:14px">🔔 Notificações</div>
+            <p style="font-size:11px;color:var(--muted);margin-top:3px">Lembrete diário às 8h (app aberto)</p>
+          </div>
+          <button class="btn primary btn-sm" onclick="requestNotifications()">Ativar</button>
         </div>
       </div>
 
@@ -566,9 +618,9 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
       <span>Metas</span>
     </button>
-    <button onclick="showTab('admin',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 1 0 4.93 19.07M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-      <span>Admin</span>
+    <button onclick="showTab('dieta',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M12 6v6l4 2"/><path d="M8 14s1 2 4 2 4-2 4-2"/></svg>
+      <span>Dieta</span>
     </button>
   </nav>
 
@@ -616,6 +668,9 @@ const DEFAULT = {
     { emoji: '📚', name: 'Curso Udemy', value: 90, saved: 0, priority: 3, desc: 'React Native avançado' }
   ],
   savings: 0, savingsGoal: 2800,
+  monthlyIncome: 0, monthlyExpenses: 0,
+  savingsRate: 0.9,
+  dietNotes: [],
   workoutLog: {}
 };
 
@@ -680,17 +735,17 @@ function renderHoje() {
   document.getElementById('kaffaCard').innerHTML = `
     <div class="task-card ${k.done ? 'done' : ''}" style="border-color:${k.done ? 'rgba(51,177,111,.45)' : 'rgba(240,106,59,.4)'}">
       <div class="task-top">
-        <div class="emoji-box" style="background:rgba(240,106,59,.18)">☕</div>
+        <div class="emoji-box" style="background:rgba(240,106,59,.18);font-size:24px">👑</div>
         <div class="task-main">
           <h3>${k.name}</h3>
           <p>${k.desc}</p>
           <div class="mini-row">
             <span class="chip" style="background:rgba(240,106,59,.18);color:var(--accent)">+${fmt(k.reward)} moedas</span>
-            <span class="chip">${k.time}</span>
+            ${(k.penalty||0) > 0 ? `<span class="chip penalty-chip">-${k.penalty} 🪙 falhar</span>` : ''}
           </div>
         </div>
         <div class="task-status">
-          <span class="tag ${k.done ? 'done' : 'accent'}">${k.done ? '✓ Feito' : 'Principal'}</span>
+          <span class="tag ${k.done ? 'done' : 'accent'}">${k.done ? '✓ Feito' : '⭐ Super'}</span>
         </div>
       </div>
       ${k.done
@@ -711,8 +766,8 @@ function renderHoje() {
           <h3>${t.title}</h3>
           <p>${t.desc}</p>
           <div class="mini-row">
-            <span class="chip">+${t.reward} 🪙</span>
-            ${pen > 0 ? `<span class="chip penalty-chip">-${pen} 🪙</span>` : ''}
+            ${pen > 0 ? `<span class="chip penalty-chip">-${pen} 🪙 falhar</span>` : ''}
+            <span class="chip">+${t.reward} 🪙 concluir</span>
           </div>
         </div>
         <div class="task-status">${stateTag(t.state)}</div>
@@ -855,15 +910,74 @@ function renderLoja() {
 // ========================================================
 function renderMetas() {
   const sp = pct(D.savings, D.savingsGoal);
-  document.getElementById('savingsCard').innerHTML = `
-    <div style="margin-bottom:12px">
-      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Guardado este mês</div>
-      <div style="font-family:'Bebas Neue';font-size:44px;color:var(--accent);line-height:1">R$ ${fmt(D.savings)}</div>
+  const rate = D.savingsRate || 0.9; // rendimento % ao mês
+  const proj3 = D.savings * Math.pow(1 + rate/100, 3);
+  const proj12 = D.savings * Math.pow(1 + rate/100, 12);
+
+  // Cofrinho card
+  document.getElementById('cofrinhoCard').innerHTML = `
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+        <div>
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">💰 Guardado</div>
+          <div style="font-family:'Bebas Neue';font-size:48px;color:var(--accent);line-height:1">R$ ${fmt(D.savings)}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px">Meta: R$ ${fmt(D.savingsGoal)}</div>
+        </div>
+        <div style="font-size:52px;line-height:1">🐷</div>
+      </div>
+      <div class="progress"><span style="width:${sp}%"></span></div>
+      <p style="margin-top:6px;font-size:11px;color:var(--muted)">${sp}% da meta &nbsp;·&nbsp; Falta R$ ${fmt(Math.max(0, D.savingsGoal - D.savings))}</p>
+
+      <!-- Botões rápidos -->
+      <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+        <button class="btn btn-sm" onclick="addToSavings(-50)">− R$50</button>
+        <button class="btn btn-sm" onclick="addToSavings(-100)">− R$100</button>
+        <button class="btn primary btn-sm" onclick="addToSavings(50)">+ R$50</button>
+        <button class="btn primary btn-sm" onclick="addToSavings(100)">+ R$100</button>
+        <button class="btn btn-sm" onclick="promptAddSavings()">💬 Valor livre</button>
+      </div>
+
+      <!-- Projeção de rendimento -->
+      ${D.savings > 0 ? `
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">📈 Rendimento estimado (${rate}% a.m.)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="background:var(--surface-2);border-radius:14px;padding:12px;border:1px solid var(--line)">
+            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">em 3 meses</div>
+            <div style="font-family:'Bebas Neue';font-size:20px;color:var(--success)">R$ ${fmt(Math.round(proj3))}</div>
+            <div style="font-size:10px;color:var(--success)">+R$ ${fmt(Math.round(proj3-D.savings))}</div>
+          </div>
+          <div style="background:var(--surface-2);border-radius:14px;padding:12px;border:1px solid var(--line)">
+            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">em 12 meses</div>
+            <div style="font-family:'Bebas Neue';font-size:20px;color:var(--success)">R$ ${fmt(Math.round(proj12))}</div>
+            <div style="font-size:10px;color:var(--success)">+R$ ${fmt(Math.round(proj12-D.savings))}</div>
+          </div>
+        </div>
+        <p style="font-size:10px;color:var(--muted);margin-top:8px;text-align:center">Taxa configurável no Admin · Rendimento estimado, não garantido</p>
+      </div>` : ''}
+    </div>`;
+
+  // Resumo mensal
+  const saldo = (D.monthlyIncome||0) - (D.monthlyExpenses||0);
+  document.getElementById('resumoCard').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      <div class="card" style="text-align:center;padding:14px 10px">
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Entradas</div>
+        <div style="font-family:'Bebas Neue';font-size:22px;color:var(--success);line-height:1">R$ ${fmt(D.monthlyIncome||0)}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px">este mês</div>
+      </div>
+      <div class="card" style="text-align:center;padding:14px 10px">
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Saídas</div>
+        <div style="font-family:'Bebas Neue';font-size:22px;color:var(--danger);line-height:1">R$ ${fmt(D.monthlyExpenses||0)}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px">este mês</div>
+      </div>
+      <div class="card" style="text-align:center;padding:14px 10px;border-color:${saldo>=0?'rgba(51,177,111,.3)':'rgba(219,91,86,.3)'}">
+        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Saldo</div>
+        <div style="font-family:'Bebas Neue';font-size:22px;color:${saldo>=0?'var(--success)':'var(--danger)'};line-height:1">R$ ${fmt(Math.abs(saldo))}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px">${saldo>=0?'sobra':'falta'}</div>
+      </div>
     </div>
-    <div class="progress"><span style="width:${sp}%"></span></div>
-    <p style="margin-top:8px;font-size:12px;color:var(--muted)">
-      Meta: R$ ${fmt(D.savingsGoal)} &nbsp;·&nbsp; Falta R$ ${fmt(Math.max(0, D.savingsGoal - D.savings))}
-    </p>`;
+    <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px">Configure valores no Admin</p>`;
 
   const pColors = ['var(--danger)', 'var(--accent)', 'var(--success)'];
   const pBg = ['rgba(219,91,86,.16)', 'rgba(240,106,59,.16)', 'rgba(51,177,111,.16)'];
@@ -971,6 +1085,9 @@ function renderAdmin() {
   // Goals
   document.getElementById('aSavingsGoal').value = D.savingsGoal;
   document.getElementById('aSavingsCurrent').value = D.savings;
+  document.getElementById('aSavingsIncome').value = D.monthlyIncome || '';
+  document.getElementById('aSavingsExpense').value = D.monthlyExpenses || '';
+  document.getElementById('aSavingsRate').value = D.savingsRate || 0.9;
   document.getElementById('aGoalList').innerHTML = D.goals.length
     ? D.goals.map((g, i) => `
         <div class="a-item">
@@ -1087,10 +1204,9 @@ function saveKaffa() {
   const desc = document.getElementById('aKaffaDesc').value.trim();
   const reward = parseInt(document.getElementById('aKaffaReward').value);
   const penalty = parseInt(document.getElementById('aKaffaPenalty').value) || 0;
-  const time = document.getElementById('aKaffaTime').value.trim();
   if (!name) { alert('Nome é obrigatório!'); return; }
-  D.kaffa = { ...D.kaffa, name, desc, reward: reward || D.kaffa.reward, penalty, time: time || D.kaffa.time };
-  save(); alert('✓ Missão Kaffa atualizada!');
+  D.kaffa = { ...D.kaffa, name, desc, reward: reward || D.kaffa.reward, penalty };
+  save(); alert('✓ Super Missão atualizada!');
 }
 
 function addTask() {
@@ -1210,12 +1326,26 @@ function deleteShopItem(i) {
   D.shop.splice(i, 1); save(); renderAdmin();
 }
 
+function addToSavings(amount) {
+  D.savings = Math.max(0, (D.savings || 0) + amount);
+  save(); renderMetas();
+}
+function promptAddSavings() {
+  const v = parseFloat(prompt('Valor a adicionar (use - para subtrair, ex: -50):'));
+  if (!isNaN(v)) { D.savings = Math.max(0, (D.savings||0) + v); save(); renderMetas(); }
+}
 function saveSavings() {
-  const goal = parseFloat(document.getElementById('aSavingsGoal').value);
-  const cur  = parseFloat(document.getElementById('aSavingsCurrent').value);
+  const goal    = parseFloat(document.getElementById('aSavingsGoal').value);
+  const cur     = parseFloat(document.getElementById('aSavingsCurrent').value);
+  const income  = parseFloat(document.getElementById('aSavingsIncome').value);
+  const expense = parseFloat(document.getElementById('aSavingsExpense').value);
+  const rate    = parseFloat(document.getElementById('aSavingsRate').value);
   if (goal > 0) D.savingsGoal = goal;
-  if (cur >= 0) D.savings = cur;
-  save(); alert('✓ Poupança atualizada!');
+  if (!isNaN(cur)  && cur >= 0) D.savings = cur;
+  if (!isNaN(income)  && income >= 0) D.monthlyIncome  = income;
+  if (!isNaN(expense) && expense >= 0) D.monthlyExpenses = expense;
+  if (!isNaN(rate)  && rate >= 0) D.savingsRate = rate;
+  save(); alert('✓ Financeiro atualizado!'); renderMetas();
 }
 function addGoal() {
   const emoji = document.getElementById('nGEmoji').value.trim() || '🎯';
@@ -1335,19 +1465,49 @@ function initSwipe(el, idx) {
 }
 
 // ========================================================
+// DIETA
+// ========================================================
+function renderDieta() {
+  const notes = D.dietNotes || [];
+  document.getElementById('dietaNotes').innerHTML = notes.length
+    ? notes.map((n, i) => `
+        <div class="task-card" style="display:flex;align-items:center;gap:12px;padding:14px">
+          <div class="emoji-box" style="width:38px;height:38px">${n.emoji || '🥗'}</div>
+          <div style="flex:1;font-size:13px;font-weight:500">${n.text}</div>
+          <button class="icon-btn del" onclick="deleteDietNote(${i})">🗑</button>
+        </div>`).join('')
+    : `<div class="card"><p class="empty-msg">Sem anotações ainda. Adicione suas metas de alimentação!</p></div>`;
+}
+function addDietNote() {
+  const emoji = document.getElementById('dNEmoji').value.trim() || '🥗';
+  const text  = document.getElementById('dNText').value.trim();
+  if (!text) { alert('Escreva algo!'); return; }
+  if (!D.dietNotes) D.dietNotes = [];
+  D.dietNotes.push({ emoji, text });
+  save();
+  document.getElementById('dNEmoji').value = '';
+  document.getElementById('dNText').value  = '';
+  renderDieta();
+}
+function deleteDietNote(i) {
+  D.dietNotes.splice(i, 1); save(); renderDieta();
+}
+
+// ========================================================
 // NAVIGATION
 // ========================================================
 function showTab(id, btn) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
 
   if (id === 'hoje')   renderHoje();
   if (id === 'rotina') renderRotina();
   if (id === 'cursos') renderCursos();
   if (id === 'loja')   renderLoja();
   if (id === 'metas')  renderMetas();
+  if (id === 'dieta')  renderDieta();
   if (id === 'admin')  renderAdmin();
 }
 
@@ -1358,6 +1518,101 @@ document.getElementById('themeBtn').addEventListener('click', function() {
   html.setAttribute('data-theme', next);
   this.textContent = next === 'dark' ? '☾' : '☼';
 });
+
+// ========================================================
+// PWA ICON (SVG inline como base64)
+// ========================================================
+(function setupPWA() {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    <rect width="512" height="512" rx="110" fill="#0f0f10"/>
+    <circle cx="256" cy="256" r="200" fill="none" stroke="url(#g1)" stroke-width="14" opacity=".7"/>
+    <defs>
+      <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#33b16f"/>
+        <stop offset="100%" stop-color="#4d8fd2"/>
+      </linearGradient>
+    </defs>
+    <!-- barbell topo -->
+    <rect x="190" y="68" width="132" height="18" rx="9" fill="#f0f0f0"/>
+    <rect x="180" y="58" width="22" height="38" rx="8" fill="#aaa"/>
+    <rect x="310" y="58" width="22" height="38" rx="8" fill="#aaa"/>
+    <!-- livro esquerda -->
+    <rect x="62" y="218" width="70" height="80" rx="8" fill="#4d8fd2"/>
+    <rect x="96" y="218" width="4" height="80" fill="#3a7ab8"/>
+    <rect x="68" y="230" width="24" height="4" rx="2" fill="#fff" opacity=".5"/>
+    <rect x="68" y="240" width="20" height="4" rx="2" fill="#fff" opacity=".5"/>
+    <!-- checklist base -->
+    <rect x="206" y="372" width="100" height="80" rx="10" fill="#26262b"/>
+    <rect x="218" y="388" width="14" height="14" rx="3" fill="#33b16f"/>
+    <line x1="221" y1="395" x2="224" y2="399" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+    <line x1="224" y1="399" x2="230" y2="390" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+    <rect x="236" y="392" width="58" height="6" rx="3" fill="#555"/>
+    <rect x="218" y="408" width="14" height="14" rx="3" fill="#33b16f"/>
+    <line x1="221" y1="415" x2="224" y2="419" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+    <line x1="224" y1="419" x2="230" y2="410" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+    <rect x="236" y="412" width="44" height="6" rx="3" fill="#555"/>
+    <!-- moedas direita -->
+    <circle cx="390" cy="232" r="28" fill="#f3b63f"/>
+    <text x="390" y="239" text-anchor="middle" font-family="Arial" font-weight="bold" font-size="18" fill="#8a5a00">R$</text>
+    <circle cx="400" cy="255" r="20" fill="#e8a93a"/>
+    <!-- LS initials -->
+    <text x="380" y="460" font-family="Arial Black,sans-serif" font-weight="900" font-size="42" fill="white" opacity=".15">LS</text>
+  </svg>`;
+  const b64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+  document.getElementById('appIconLink').href = b64;
+  document.getElementById('faviconLink').href  = b64;
+
+  // Inline manifest para PWA
+  const manifest = {
+    name: 'Hub da Rotina',
+    short_name: 'Hub',
+    start_url: './',
+    display: 'standalone',
+    background_color: '#0f0f10',
+    theme_color: '#0f0f10',
+    icons: [{ src: b64, sizes: '512x512', type: 'image/svg+xml' }]
+  };
+  const mBlob = new Blob([JSON.stringify(manifest)], {type:'application/manifest+json'});
+  const mUrl  = URL.createObjectURL(mBlob);
+  const mLink = document.createElement('link');
+  mLink.rel = 'manifest'; mLink.href = mUrl;
+  document.head.appendChild(mLink);
+})();
+
+// ========================================================
+// NOTIFICAÇÕES
+// ========================================================
+function requestNotifications() {
+  if (!('Notification' in window)) return;
+  Notification.requestPermission().then(perm => {
+    if (perm === 'granted') {
+      localStorage.setItem('notifEnabled', '1');
+      scheduleNotif();
+      alert('✓ Notificações ativadas! Você receberá um lembrete diário às 8h.');
+    }
+  });
+}
+function scheduleNotif() {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  const lastSent = parseInt(localStorage.getItem('lastNotif') || '0');
+  const now = Date.now();
+  const msUntil8am = (() => {
+    const d = new Date(); d.setHours(8, 0, 0, 0);
+    if (d.getTime() < now) d.setDate(d.getDate() + 1);
+    return d.getTime() - now;
+  })();
+  if (now - lastSent > 20 * 60 * 60 * 1000) { // se faz mais de 20h desde última
+    setTimeout(() => {
+      new Notification('Hub da Rotina 👑', {
+        body: 'Bora marcar as missões de hoje? Não perde o streak!',
+        icon: document.getElementById('appIconLink')?.href || ''
+      });
+      localStorage.setItem('lastNotif', String(Date.now()));
+    }, msUntil8am);
+  }
+}
+// Tenta agendar ao abrir (se já tiver permissão)
+if (localStorage.getItem('notifEnabled') === '1') scheduleNotif();
 
 // ========================================================
 // INIT
