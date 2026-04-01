@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>Hub da Rotina</title>
-  <!-- PWA -->
   <meta name="theme-color" content="#0f0f10">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -37,6 +36,16 @@
     body{font-family:"DM Sans",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
     button,input,select,textarea{font:inherit}
     a{color:inherit;text-decoration:none}
+
+    /* === SPLASH === */
+    #splash{position:fixed;inset:0;background:#0f0f10;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:18px;transition:opacity .5s ease}
+    #splash.hide{opacity:0;pointer-events:none}
+    .sp-icon{width:88px;height:88px;border-radius:26px;background:rgba(240,106,59,.15);border:1px solid rgba(240,106,59,.35);display:grid;place-items:center}
+    .sp-icon svg{width:50px;height:50px;color:#f06a3b}
+    .sp-title{font-family:"Bebas Neue",sans-serif;font-size:54px;color:#fff;letter-spacing:.06em;line-height:1;text-align:center}
+    .sp-sub{font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.2em;text-transform:uppercase;margin-top:-6px}
+    .sp-dot{width:6px;height:6px;border-radius:50%;background:var(--accent,#f06a3b);animation:pulse 1.2s ease infinite}
+    @keyframes pulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
 
     /* === LAYOUT === */
     .app{max-width:460px;margin:0 auto;padding:20px 16px 110px}
@@ -85,7 +94,8 @@
     .task-card.failed{border-color:rgba(219,91,86,.4);background:color-mix(in srgb,var(--surface) 88%,var(--danger) 12%)}
 
     /* === SWIPE TASK === */
-    .swipe-card{position:relative;cursor:grab;touch-action:pan-y;user-select:none}
+    .swipe-card{position:relative;cursor:grab;user-select:none;touch-action:pan-y}
+    .swipe-card.swiping-h{touch-action:none}
     .swipe-card:active{cursor:grabbing}
     .sh-done,.sh-fail{position:absolute;top:50%;transform:translateY(-50%);font-size:12px;font-weight:800;letter-spacing:.03em;opacity:0;pointer-events:none;z-index:2;border-radius:8px;padding:4px 10px;white-space:nowrap}
     .sh-done{right:14px;color:var(--success);background:var(--success-soft)}
@@ -166,6 +176,12 @@
     .goal-name{font-weight:700;font-size:14px}
     .goal-val{font-family:"Bebas Neue",sans-serif;font-size:22px}
 
+    /* === FINANCIAL INLINE EDIT === */
+    .fin-val{cursor:pointer;border-radius:10px;padding:2px 8px;margin:-2px -8px;transition:background .15s;display:inline-block;-webkit-tap-highlight-color:transparent}
+    .fin-val:hover,.fin-val:active{background:var(--accent-soft)}
+    .fin-edit-wrap{display:flex;align-items:center;gap:6px}
+    .fin-edit-input{font-family:"Bebas Neue",sans-serif;background:var(--surface-2);border:1.5px solid var(--accent);color:var(--accent);border-radius:10px;padding:4px 10px;outline:none;width:100%;font-size:inherit;line-height:1}
+
     /* === NAV === */
     .nav{position:fixed;left:50%;transform:translateX(-50%);bottom:12px;width:min(460px,calc(100% - 18px));background:rgba(15,15,16,.92);border:1px solid rgba(255,255,255,.09);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:24px;padding:8px;display:grid;grid-template-columns:repeat(6,1fr);gap:5px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
     .nav button{min-height:50px;border-radius:14px;color:#b0acb8;background:transparent;font-size:9px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:1px solid transparent;cursor:pointer;transition:all .15s;padding:0}
@@ -185,8 +201,6 @@
     .admin-arrow.open{transform:rotate(180deg)}
     .admin-body{display:none;padding:0 16px 16px;border-top:1px solid var(--line)}
     .admin-body.open{display:block}
-
-    /* Admin item rows */
     .a-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
     .a-item:last-of-type{border-bottom:none}
     .a-item-icon{font-size:18px;flex-shrink:0;width:24px;text-align:center}
@@ -197,8 +211,6 @@
     .icon-btn{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--surface-2);color:var(--muted);display:grid;place-items:center;cursor:pointer;font-size:13px;transition:all .15s}
     .icon-btn:hover{border-color:var(--accent);color:var(--accent)}
     .icon-btn.del:hover{border-color:var(--danger);color:var(--danger)}
-
-    /* Admin form */
     .admin-form{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
     .form-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;display:block}
     .f-row{display:flex;gap:8px;margin-bottom:8px}
@@ -206,18 +218,18 @@
     .f-input:focus{outline:none;border-color:var(--accent)}
     .f-input.w-sm{width:70px;flex:none}
     .f-input.w-md{width:110px;flex:none}
-
-    /* Danger zone / vacation */
     .danger-zone{background:var(--surface);border:1px solid rgba(219,91,86,.3);border-radius:20px;padding:16px;box-shadow:var(--shadow)}
     .switch-row{display:flex;justify-content:space-between;align-items:center}
     .toggle{width:48px;height:28px;border-radius:999px;background:var(--surface-3);border:1px solid var(--line);position:relative;cursor:pointer;flex-shrink:0}
     .toggle-thumb{position:absolute;top:50%;width:20px;height:20px;border-radius:50%;transform:translateY(-50%);transition:left .2s,background .2s}
-
-    /* Misc */
     .divider{height:1px;background:var(--line);margin:14px 0}
     .empty-msg{text-align:center;padding:20px;font-size:12px;color:var(--muted)}
     .note{padding:11px 14px;border-radius:14px;background:var(--accent-soft);font-size:12px;color:var(--text);margin-top:10px}
     .note.success{background:var(--success-soft);color:var(--success)}
+
+    /* Notif time tag */
+    .notif-time-tag{display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:12px;font-weight:700}
+    .notif-time-tag button{background:none;border:none;color:var(--danger);cursor:pointer;font-size:13px;padding:0;line-height:1}
 
     @media (min-width:700px){
       .app{max-width:980px;padding-bottom:40px}
@@ -228,6 +240,19 @@
   <base target="_blank">
 </head>
 <body>
+
+<!-- SPLASH SCREEN -->
+<div id="splash">
+  <div class="sp-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 18V6l7-2 7 2v12l-7 2-7-2Z"/><path d="M12 4v16"/><path d="M5 9.5 12 12l7-2.5"/>
+    </svg>
+  </div>
+  <div class="sp-title">Hub da Rotina</div>
+  <div class="sp-sub">Sistema pessoal</div>
+  <div class="sp-dot"></div>
+</div>
+
 <main class="app">
 
   <header class="topbar">
@@ -278,11 +303,10 @@
   <section class="section" id="rotina">
     <div class="section-head"><h2>Rotina semanal</h2><span>programação</span></div>
     <div class="timeline" id="routineTimeline"></div>
-
     <div class="section-head" style="margin-top:24px"><h2>Calendário de treinos</h2><span>clique para marcar</span></div>
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <span style="font-weight:700">Março 2026</span>
+        <span style="font-weight:700">Semana atual</span>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           <span class="chip" style="background:rgba(51,177,111,.18);color:var(--success)">✓ Feito</span>
           <span class="chip" style="background:rgba(219,91,86,.18);color:var(--danger)">✗ Perdido</span>
@@ -321,11 +345,11 @@
 
   <!-- ===== METAS ===== -->
   <section class="section" id="metas">
-    <div class="section-head"><h2>Cofrinho</h2><span>🐷 poupança</span></div>
-    <div id="cofrinhoCard"></div>
+    <div class="section-head"><h2>Financeiro</h2><span>💰 toque para editar</span></div>
+    <div id="finCard"></div>
 
-    <div class="section-head" style="margin-top:18px"><h2>Resumo mensal</h2><span>entradas &amp; saídas</span></div>
-    <div id="resumoCard"></div>
+    <div class="section-head" style="margin-top:18px"><h2>Cofrinho</h2><span>🐷 poupança</span></div>
+    <div id="cofrinhoCard"></div>
 
     <div class="section-head" style="margin-top:18px"><h2>Lista de compras</h2><span>prioridades</span></div>
     <div class="stack" id="goalsList"></div>
@@ -337,7 +361,7 @@
     <div class="card" style="text-align:center;padding:32px 20px">
       <div style="font-size:52px;margin-bottom:12px">🥗</div>
       <h3 style="font-size:18px;margin-bottom:8px">Aba em construção</h3>
-      <p style="font-size:13px;color:var(--muted);line-height:1.6;max-width:28ch;margin:0 auto">Em breve você vai poder acompanhar sua dieta e metas de alimentação aqui. Por enquanto, use para anotar suas metas com a nutricionista.</p>
+      <p style="font-size:13px;color:var(--muted);line-height:1.6;max-width:28ch;margin:0 auto">Em breve você vai poder acompanhar sua dieta e metas de alimentação aqui.</p>
     </div>
     <div class="section-head" style="margin-top:20px"><h2>Minhas metas</h2><span>anotações</span></div>
     <div class="stack" id="dietaNotes"></div>
@@ -359,10 +383,7 @@
       <!-- Água -->
       <div class="admin-card">
         <div class="admin-hdr" onclick="toggleAccordion('agua')">
-          <div class="admin-hdr-left">
-            <div class="admin-icon">💧</div>
-            <div><h3>Meta de Água</h3><p>Copos diários</p></div>
-          </div>
+          <div class="admin-hdr-left"><div class="admin-icon">💧</div><div><h3>Meta de Água</h3><p>Copos diários</p></div></div>
           <span class="admin-arrow" id="arr-agua">▼</span>
         </div>
         <div class="admin-body" id="body-agua">
@@ -379,10 +400,7 @@
       <!-- Missão Principal -->
       <div class="admin-card">
         <div class="admin-hdr" onclick="toggleAccordion('kaffa')">
-          <div class="admin-hdr-left">
-            <div class="admin-icon">⚔️</div>
-            <div><h3>Missão Principal</h3><p>Kaffa / missão do dia</p></div>
-          </div>
+          <div class="admin-hdr-left"><div class="admin-icon">⚔️</div><div><h3>Super Missão</h3><p>Missão principal do dia</p></div></div>
           <span class="admin-arrow" id="arr-kaffa">▼</span>
         </div>
         <div class="admin-body" id="body-kaffa">
@@ -401,10 +419,7 @@
       <!-- Missões Diárias -->
       <div class="admin-card">
         <div class="admin-hdr" onclick="toggleAccordion('tasks')">
-          <div class="admin-hdr-left">
-            <div class="admin-icon">📋</div>
-            <div><h3>Missões Diárias</h3><p>Adicionar, editar e remover</p></div>
-          </div>
+          <div class="admin-hdr-left"><div class="admin-icon">📋</div><div><h3>Missões Diárias</h3><p>Adicionar, editar e remover</p></div></div>
           <span class="admin-arrow" id="arr-tasks">▼</span>
         </div>
         <div class="admin-body" id="body-tasks">
@@ -415,9 +430,7 @@
               <input type="text" class="f-input w-sm" id="nTEmoji" placeholder="🎯">
               <input type="text" class="f-input" id="nTTitle" placeholder="Título da missão">
             </div>
-            <div class="f-row">
-              <input type="text" class="f-input" id="nTDesc" placeholder="Descrição breve">
-            </div>
+            <div class="f-row"><input type="text" class="f-input" id="nTDesc" placeholder="Descrição breve"></div>
             <div class="f-row">
               <input type="number" class="f-input" id="nTReward" placeholder="🪙 Recompensa">
               <input type="number" class="f-input" id="nTPenalty" placeholder="⚠️ Penalidade">
@@ -430,10 +443,7 @@
       <!-- Rotina Semanal -->
       <div class="admin-card">
         <div class="admin-hdr" onclick="toggleAccordion('routine')">
-          <div class="admin-hdr-left">
-            <div class="admin-icon">📅</div>
-            <div><h3>Rotina Semanal</h3><p>Blocos de horário do dia</p></div>
-          </div>
+          <div class="admin-hdr-left"><div class="admin-icon">📅</div><div><h3>Rotina Semanal</h3><p>Blocos de horário do dia</p></div></div>
           <span class="admin-arrow" id="arr-routine">▼</span>
         </div>
         <div class="admin-body" id="body-routine">
@@ -444,12 +454,10 @@
               <input type="text" class="f-input w-md" id="nRTime" placeholder="09:00">
               <input type="text" class="f-input" id="nRTitle" placeholder="Título">
             </div>
-            <div class="f-row">
-              <input type="text" class="f-input" id="nRDesc" placeholder="Descrição">
-            </div>
+            <div class="f-row"><input type="text" class="f-input" id="nRDesc" placeholder="Descrição"></div>
             <div class="f-row" style="align-items:center">
               <div id="nRColorSwatch" style="width:32px;height:32px;border-radius:9px;border:1px solid var(--line);flex-shrink:0;background:var(--accent);transition:background .2s"></div>
-              <input type="text" class="f-input" id="nRColor" placeholder="Cor: roxo, azul, verde, laranja, vermelho..." oninput="updateColorPreview()">
+              <input type="text" class="f-input" id="nRColor" placeholder="Cor: roxo, azul, verde, laranja..." oninput="updateColorPreview()">
               <button class="btn primary btn-sm" id="nRSubmitBtn" onclick="saveRoutineForm()">+ Adicionar</button>
             </div>
             <div id="nRCancelRow" style="display:none;margin-top:8px">
@@ -462,10 +470,7 @@
       <!-- Cursos -->
       <div class="admin-card">
         <div class="admin-hdr" onclick="toggleAccordion('courses')">
-          <div class="admin-hdr-left">
-            <div class="admin-icon">📚</div>
-            <div><h3>Cursos</h3><p>Gerenciar lista de cursos</p></div>
-          </div>
+          <div class="admin-hdr-left"><div class="admin-icon">📚</div><div><h3>Cursos</h3><p>Gerenciar lista de cursos</p></div></div>
           <span class="admin-arrow" id="arr-courses">▼</span>
         </div>
         <div class="admin-body" id="body-courses">
@@ -488,10 +493,7 @@
       <!-- Loja -->
       <div class="admin-card">
         <div class="admin-hdr" onclick="toggleAccordion('shop')">
-          <div class="admin-hdr-left">
-            <div class="admin-icon">🛒</div>
-            <div><h3>Loja</h3><p>Itens e preços das recompensas</p></div>
-          </div>
+          <div class="admin-hdr-left"><div class="admin-icon">🛒</div><div><h3>Loja</h3><p>Itens e preços das recompensas</p></div></div>
           <span class="admin-arrow" id="arr-shop">▼</span>
         </div>
         <div class="admin-body" id="body-shop">
@@ -511,10 +513,7 @@
       <!-- Metas Financeiras -->
       <div class="admin-card">
         <div class="admin-hdr" onclick="toggleAccordion('goals')">
-          <div class="admin-hdr-left">
-            <div class="admin-icon">💰</div>
-            <div><h3>Metas Financeiras</h3><p>Poupança e lista de compras</p></div>
-          </div>
+          <div class="admin-hdr-left"><div class="admin-icon">💰</div><div><h3>Financeiro</h3><p>Cofrinho e lista de compras</p></div></div>
           <span class="admin-arrow" id="arr-goals">▼</span>
         </div>
         <div class="admin-body" id="body-goals">
@@ -526,11 +525,11 @@
             </div>
             <span class="form-label" style="margin-top:10px">📊 Resumo mensal</span>
             <div class="f-row">
-              <input type="number" class="f-input" id="aSavingsIncome" placeholder="Entradas R$">
-              <input type="number" class="f-input" id="aSavingsExpense" placeholder="Saídas R$">
+              <input type="number" class="f-input" id="aSavingsIncome" placeholder="Entrada R$">
+              <input type="number" class="f-input" id="aSavingsExpense" placeholder="Gasto R$">
             </div>
             <div class="f-row">
-              <input type="number" class="f-input" id="aSavingsRate" placeholder="Rendimento % a.m. (ex: 0.9)">
+              <input type="number" class="f-input" id="aSavingsRate" placeholder="Rendimento % a.m.">
               <button class="btn primary btn-sm" onclick="saveSavings()">Salvar</button>
             </div>
           </div>
@@ -556,6 +555,34 @@
         </div>
       </div>
 
+      <!-- Notificações -->
+      <div class="admin-card">
+        <div class="admin-hdr" onclick="toggleAccordion('notif')">
+          <div class="admin-hdr-left"><div class="admin-icon">🔔</div><div><h3>Notificações</h3><p>Horários e mensagens motivacionais</p></div></div>
+          <span class="admin-arrow" id="arr-notif">▼</span>
+        </div>
+        <div class="admin-body" id="body-notif">
+          <div style="margin-top:14px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+              <span style="font-size:13px;font-weight:700">Ativar notificações</span>
+              <button class="btn primary btn-sm" onclick="requestNotifications()">Ativar permissão</button>
+            </div>
+            <span class="form-label">Horários de lembrete</span>
+            <div id="notifTimesList" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px"></div>
+            <div class="f-row">
+              <input type="time" class="f-input" id="newNotifTime" value="08:00">
+              <button class="btn primary btn-sm" onclick="addNotifTime()">+ Horário</button>
+            </div>
+            <span class="form-label" style="margin-top:10px">Mensagens motivacionais</span>
+            <div id="notifMsgList" style="margin-bottom:10px"></div>
+            <div class="f-row">
+              <input type="text" class="f-input" id="newNotifMsg" placeholder="Ex: Bora treinar! 💪">
+              <button class="btn primary btn-sm" onclick="addNotifMsg()">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Zona de Perigo -->
       <div class="danger-zone">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
@@ -566,17 +593,6 @@
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn danger btn-sm" onclick="resetDay()">🔄 Resetar Dia</button>
           <button class="btn danger btn-sm" onclick="resetAll()">🗑 Apagar Tudo</button>
-        </div>
-      </div>
-
-      <!-- Notificações -->
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <div style="font-weight:700;font-size:14px">🔔 Notificações</div>
-            <p style="font-size:11px;color:var(--muted);margin-top:3px">Lembrete diário às 8h (app aberto)</p>
-          </div>
-          <button class="btn primary btn-sm" onclick="requestNotifications()">Ativar</button>
         </div>
       </div>
 
@@ -627,72 +643,86 @@
 </main>
 
 <script>
-// ========================================================
+// ============================================================
 // DEFAULT DATA
-// ========================================================
+// ============================================================
 const DEFAULT = {
   _v: 3,
   coins: 0, streak: 0, vacation: false,
   water: { current: 0, goal: 6 },
-  kaffa: { name: 'Missão Principal', desc: 'Descreva sua missão mais importante do dia.', reward: 100, penalty: 0, time: '08:00', done: false },
+  kaffa: { name: 'Missão Principal', desc: 'Descreva sua missão mais importante do dia.', reward: 100, penalty: 0, done: false },
   tasks: [
-    { emoji: '⏰', title: 'Acordar cedo', desc: 'Sem soneca, levanta direto.', reward: 30, penalty: 15, state: 'idle' },
-    { emoji: '🏋️', title: 'Treino do dia', desc: 'Foco total no treino.', reward: 35, penalty: 20, state: 'idle' },
-    { emoji: '💻', title: 'Estudo / Projeto', desc: 'Bloco profundo de estudo.', reward: 25, penalty: 15, state: 'idle' },
-    { emoji: '💧', title: 'Meta de água', desc: 'Beber todos os copos do dia.', reward: 20, penalty: 10, state: 'idle' }
+    { emoji: '⏰', title: 'Acordar cedo',    desc: 'Sem soneca, levanta direto.',       reward: 30, penalty: 15, state: 'idle' },
+    { emoji: '🏋️', title: 'Treino do dia',   desc: 'Foco total no treino.',             reward: 35, penalty: 20, state: 'idle' },
+    { emoji: '💻', title: 'Estudo / Projeto',desc: 'Bloco profundo de estudo.',          reward: 25, penalty: 15, state: 'idle' },
+    { emoji: '💧', title: 'Meta de água',    desc: 'Beber todos os copos do dia.',       reward: 20, penalty: 10, state: 'idle' }
   ],
   courses: [
-    { emoji: '🐍', name: 'Python Avançado', total: 313, done: 0, cpp: 20 },
-    { emoji: '💻', name: 'C# .NET', total: 278, done: 0, cpp: 20 },
+    { emoji: '🐍', name: 'Python Avançado',      total: 313, done: 0, cpp: 20 },
+    { emoji: '💻', name: 'C# .NET',              total: 278, done: 0, cpp: 20 },
     { emoji: '🗄️', name: 'SQL e Banco de Dados', total: 120, done: 0, cpp: 20 }
   ],
   routine: [
-    { time: '06:30', title: 'Acordar', desc: 'Sem soneca — água imediatamente. Começo forte.', color: 'var(--purple)' },
-    { time: '07:00', title: 'Academia — Seg/Qua/Sex', desc: 'Treino pesado. Ter/Qui: cardio ou esporte.', color: 'var(--accent)' },
-    { time: '09:00', title: 'Estudo / Projeto', desc: 'Bloco profundo: Python, C#, SQL, JS. Sem celular.', color: 'var(--blue)' },
-    { time: '13:00', title: 'Kaffa Tecnologia', desc: 'Estágio — ArcGIS, C#, SQL. Aprende com a equipe.', color: '#f3b63f' },
-    { time: '20:30', title: 'Conteúdo / Revisão', desc: 'Instagram, leitura leve ou fechar pendências.', color: 'var(--success)' }
+    { time: '06:30', title: 'Acordar',              desc: 'Sem soneca — água imediatamente.',              color: 'var(--purple)' },
+    { time: '07:00', title: 'Academia — Seg/Qua/Sex',desc: 'Treino pesado. Ter/Qui: cardio ou esporte.',   color: 'var(--accent)' },
+    { time: '09:00', title: 'Estudo / Projeto',     desc: 'Bloco profundo: Python, C#, SQL. Sem celular.', color: 'var(--blue)' },
+    { time: '13:00', title: 'Kaffa Tecnologia',     desc: 'Estágio — ArcGIS, C#, SQL.',                   color: '#f3b63f' },
+    { time: '20:30', title: 'Conteúdo / Revisão',   desc: 'Instagram, leitura leve ou pendências.',       color: 'var(--success)' }
   ],
   shop: [
-    { emoji: '🏀', name: 'Jogar Basquete', price: 500 },
+    { emoji: '🏀', name: 'Jogar Basquete',   price: 500 },
     { emoji: '❤️', name: 'Sair c/ Namorada', price: 500 },
-    { emoji: '🎁', name: 'Comprar Algo', price: 1000 },
-    { emoji: '🎮', name: 'Video Game', price: 500 },
-    { emoji: '🛹', name: 'Andar de Skate', price: 500 },
-    { emoji: '🍻', name: 'Sair com Amigos', price: 500 }
+    { emoji: '🎁', name: 'Comprar Algo',      price: 1000 },
+    { emoji: '🎮', name: 'Video Game',        price: 500 },
+    { emoji: '🛹', name: 'Andar de Skate',    price: 500 },
+    { emoji: '🍻', name: 'Sair com Amigos',   price: 500 }
   ],
   inventory: [],
   goals: [
-    { emoji: '🎧', name: 'Fone novo', value: 350, saved: 0, priority: 1, desc: 'Urgente pro trabalho e estudo' },
+    { emoji: '🎧', name: 'Fone novo',        value: 350, saved: 0, priority: 1, desc: 'Urgente pro trabalho e estudo' },
     { emoji: '👟', name: 'Tênis de corrida', value: 450, saved: 0, priority: 2, desc: 'Para treinar melhor na academia' },
-    { emoji: '📚', name: 'Curso Udemy', value: 90, saved: 0, priority: 3, desc: 'React Native avançado' }
+    { emoji: '📚', name: 'Curso Udemy',       value:  90, saved: 0, priority: 3, desc: 'React Native avançado' }
   ],
   savings: 0, savingsGoal: 2800,
   monthlyIncome: 0, monthlyExpenses: 0,
   savingsRate: 0.9,
   dietNotes: [],
-  workoutLog: {}
+  workoutLog: {},
+  notifSettings: {
+    enabled: false,
+    times: ['08:00', '20:30'],
+    messages: [
+      'Bora treinar hoje! 💪 Não perde o streak!',
+      'Hora de acordar! ☀️ Começa o dia forte.',
+      'Já fez as missões de hoje? 👑 Bora lá!',
+      'Bora estudar! 💻 Um bloco por dia faz diferença.',
+      'Missões pendentes te esperando! 🎯 Foca.',
+      'Bora acordar, vai ser um dia incrível! 🔥',
+      'Não deixa o streak quebrar! 🔥 Bora fazer as missões.'
+    ]
+  }
 };
 
-// ========================================================
+// ============================================================
 // STORAGE
-// ========================================================
+// ============================================================
 function load() {
   try {
     const s = localStorage.getItem('stabHub3');
     if (!s) return JSON.parse(JSON.stringify(DEFAULT));
     const parsed = JSON.parse(s);
-    // Se versão diferente, começa do zero (mas mantém a key nova)
     if (parsed._v !== DEFAULT._v) return JSON.parse(JSON.stringify(DEFAULT));
+    // Garantir notifSettings existe
+    if (!parsed.notifSettings) parsed.notifSettings = JSON.parse(JSON.stringify(DEFAULT.notifSettings));
     return parsed;
   } catch(e) { return JSON.parse(JSON.stringify(DEFAULT)); }
 }
 function save() { localStorage.setItem('stabHub3', JSON.stringify(D)); }
 let D = load();
 
-// ========================================================
+// ============================================================
 // HELPERS
-// ========================================================
+// ============================================================
 function fmt(n) { return Number(n).toLocaleString('pt-BR'); }
 function pct(a, b) { return b > 0 ? Math.round(a / b * 100) : 0; }
 function dayName() {
@@ -700,7 +730,6 @@ function dayName() {
 }
 function todayIdx() { const d = new Date().getDay(); return d === 0 ? 6 : d - 1; }
 function dayProgress() {
-  const items = [D.kafka && D.kaffa.done, ...D.tasks.map(t => t.state === 'done')];
   const done = [D.kaffa.done, ...D.tasks.map(t => t.state === 'done')].filter(Boolean).length;
   return { done, total: 1 + D.tasks.length };
 }
@@ -708,14 +737,13 @@ function dayProgress() {
 const WORKOUTS = ['Peito','Costas','Perna','Ombro','Braço','Livre','Descanso'];
 const DAY_LETTERS = ['S','T','Q','Q','S','S','D'];
 
-// ========================================================
+// ============================================================
 // RENDER HOJE
-// ========================================================
+// ============================================================
 function renderHoje() {
   const dp = dayProgress();
   const dayPct = pct(dp.done, dp.total);
 
-  // Hero
   document.getElementById('heroBlock').innerHTML = `
     <div class="hero-top">
       <div>
@@ -730,7 +758,6 @@ function renderHoje() {
       <article class="stat"><strong>${dayPct}%</strong><span>Dia</span></article>
     </div>`;
 
-  // Kaffa Card
   const k = D.kaffa;
   document.getElementById('kaffaCard').innerHTML = `
     <div class="task-card ${k.done ? 'done' : ''}" style="border-color:${k.done ? 'rgba(51,177,111,.45)' : 'rgba(240,106,59,.4)'}">
@@ -744,16 +771,13 @@ function renderHoje() {
             ${(k.penalty||0) > 0 ? `<span class="chip penalty-chip">-${k.penalty} 🪙 falhar</span>` : ''}
           </div>
         </div>
-        <div class="task-status">
-          <span class="tag ${k.done ? 'done' : 'accent'}">${k.done ? '✓ Feito' : '⭐ Super'}</span>
-        </div>
+        <div class="task-status"><span class="tag ${k.done ? 'done' : 'accent'}">${k.done ? '✓ Feito' : '⭐ Super'}</span></div>
       </div>
       ${k.done
         ? `<div class="note success" style="margin-top:12px">✓ Missão concluída! +${fmt(k.reward)} moedas ganhas.</div>`
         : `<div class="task-actions"><button class="btn primary" onclick="completeKaffa()">Concluir Missão ✓</button></div>`}
     </div>`;
 
-  // Task list
   document.getElementById('taskList').innerHTML = D.tasks.map((t, i) => {
     const pen = t.penalty || 0;
     const isIdle = t.state === 'idle';
@@ -779,7 +803,6 @@ function renderHoje() {
   }).join('');
   initSwipeAll();
 
-  // Water panel
   const cups = Array.from({length: D.water.goal}, (_, i) =>
     `<div class="wcup ${i < D.water.current ? 'filled' : ''}" onclick="tapWater(${i})">💧</div>`
   ).join('');
@@ -790,7 +813,6 @@ function renderHoje() {
     <div class="progress"><span style="width:${pct(D.water.current, D.water.goal)}%"></span></div>
     <div class="water-cups">${cups}</div>`;
 
-  // Workout panel
   const idx = todayIdx();
   document.getElementById('workoutPanel').innerHTML = `
     <div class="panel-title">Treino de hoje</div>
@@ -798,7 +820,6 @@ function renderHoje() {
     <div class="sub-text">${idx === 6 ? 'Dia de descanso' : 'Foco total hoje'}</div>
     <div class="mini-row"><span class="chip">+35 moedas</span></div>`;
 
-  // Course panel
   const active = D.courses.find(c => pct(c.done, c.total) < 100) || D.courses[0];
   if (active) {
     const p = pct(active.done, active.total);
@@ -809,7 +830,6 @@ function renderHoje() {
       <div class="progress"><span style="width:${p}%"></span></div>`;
   }
 
-  // Mini calendar
   const todI = todayIdx();
   document.getElementById('weekCalMini').innerHTML = DAY_LETTERS.map((d, i) => {
     const st = D.workoutLog[String(i)] || '';
@@ -824,9 +844,9 @@ function stateTag(s) {
   return '<span class="tag">Pendente</span>';
 }
 
-// ========================================================
+// ============================================================
 // RENDER ROTINA
-// ========================================================
+// ============================================================
 function renderRotina() {
   document.getElementById('routineTimeline').innerHTML = D.routine.map(r => `
     <article class="t-block" style="--block-color:${r.color}">
@@ -850,9 +870,9 @@ function cycleWorkout(key) {
   save(); renderRotina();
 }
 
-// ========================================================
+// ============================================================
 // RENDER CURSOS
-// ========================================================
+// ============================================================
 function renderCursos() {
   document.getElementById('coursesList').innerHTML = D.courses.length
     ? D.courses.map((c, i) => {
@@ -879,9 +899,9 @@ function renderCursos() {
     : `<div class="card"><p class="empty-msg">Nenhum curso cadastrado. Adicione no Admin.</p></div>`;
 }
 
-// ========================================================
+// ============================================================
 // RENDER LOJA
-// ========================================================
+// ============================================================
 function renderLoja() {
   document.getElementById('shopBalance').textContent = `🪙 ${fmt(D.coins)}`;
   document.getElementById('shopList').innerHTML = D.shop.length
@@ -892,7 +912,7 @@ function renderLoja() {
           <div class="shop-price">🪙 ${fmt(s.price)}</div>
           <button class="btn primary btn-full" onclick="buyItem(${i})">Comprar</button>
         </div>`).join('')
-    : `<div style="grid-column:1/-1"><p class="empty-msg">Loja vazia. Adicione itens no Admin.</p></div>`;
+    : `<div style="grid-column:1/-1"><p class="empty-msg">Loja vazia.</p></div>`;
 
   document.getElementById('inventoryList').innerHTML = D.inventory.length
     ? D.inventory.map((item, i) => `
@@ -905,246 +925,282 @@ function renderLoja() {
     : `<div style="grid-column:1/-1"><p class="empty-msg">Baú vazio.</p></div>`;
 }
 
-// ========================================================
+// ============================================================
 // RENDER METAS
-// ========================================================
+// ============================================================
 function renderMetas() {
+  const income   = D.monthlyIncome   || 0;
+  const expenses = D.monthlyExpenses || 0;
+  const saldo    = income - expenses;
+  const saldoColor = saldo >= 0 ? 'var(--success)' : 'var(--danger)';
+  const saldoBorder= saldo >= 0 ? 'rgba(51,177,111,.3)' : 'rgba(219,91,86,.3)';
+
+  // Financeiro primary card
+  document.getElementById('finCard').innerHTML = `
+    <div class="card">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div style="background:var(--surface-2);border-radius:18px;padding:16px 14px;border:1px solid ${saldoBorder}">
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">💰 Saldo</div>
+          <div style="font-family:'Bebas Neue';font-size:34px;color:${saldoColor};line-height:1">R$ ${fmt(Math.abs(saldo))}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:4px">${saldo >= 0 ? 'sobra' : 'falta'} este mês</div>
+        </div>
+        <div style="background:var(--surface-2);border-radius:18px;padding:16px 14px;border:1px solid var(--line)">
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">💸 Gasto</div>
+          <div class="fin-val" id="fin-expenses" onclick="startEditFin('monthlyExpenses')"
+               style="font-family:'Bebas Neue';font-size:34px;color:var(--danger);line-height:1">
+            R$ ${fmt(expenses)}
+          </div>
+          <div style="font-size:9px;color:var(--accent);margin-top:4px">✏️ toque para editar</div>
+        </div>
+      </div>
+      <div style="background:var(--surface-2);border-radius:14px;padding:12px 14px;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">📈 Entrada mensal</div>
+          <div class="fin-val" id="fin-income" onclick="startEditFin('monthlyIncome')"
+               style="font-family:'Bebas Neue';font-size:28px;color:var(--success);line-height:1">
+            R$ ${fmt(income)}
+          </div>
+        </div>
+        <span style="font-size:11px;color:var(--accent)">✏️ editar</span>
+      </div>
+    </div>`;
+
+  // Cofrinho secondary
   const sp = pct(D.savings, D.savingsGoal);
-  const rate = D.savingsRate || 0.9; // rendimento % ao mês
-  const proj3 = D.savings * Math.pow(1 + rate/100, 3);
+  const rate = D.savingsRate || 0.9;
+  const proj3  = D.savings * Math.pow(1 + rate/100, 3);
   const proj12 = D.savings * Math.pow(1 + rate/100, 12);
 
-  // Cofrinho card
   document.getElementById('cofrinhoCard').innerHTML = `
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
         <div>
-          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">💰 Guardado</div>
-          <div style="font-family:'Bebas Neue';font-size:48px;color:var(--accent);line-height:1">R$ ${fmt(D.savings)}</div>
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">🐷 Guardado</div>
+          <div style="font-family:'Bebas Neue';font-size:44px;color:var(--accent);line-height:1">R$ ${fmt(D.savings)}</div>
           <div style="font-size:12px;color:var(--muted);margin-top:4px">Meta: R$ ${fmt(D.savingsGoal)}</div>
         </div>
-        <div style="font-size:52px;line-height:1">🐷</div>
+        <div style="font-size:48px;line-height:1">🐷</div>
       </div>
       <div class="progress"><span style="width:${sp}%"></span></div>
       <p style="margin-top:6px;font-size:11px;color:var(--muted)">${sp}% da meta &nbsp;·&nbsp; Falta R$ ${fmt(Math.max(0, D.savingsGoal - D.savings))}</p>
-
-      <!-- Botões rápidos -->
       <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
         <button class="btn btn-sm" onclick="addToSavings(-50)">− R$50</button>
         <button class="btn btn-sm" onclick="addToSavings(-100)">− R$100</button>
         <button class="btn primary btn-sm" onclick="addToSavings(50)">+ R$50</button>
         <button class="btn primary btn-sm" onclick="addToSavings(100)">+ R$100</button>
-        <button class="btn btn-sm" onclick="promptAddSavings()">💬 Valor livre</button>
       </div>
-
-      <!-- Projeção de rendimento -->
       ${D.savings > 0 ? `
       <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">
-        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">📈 Rendimento estimado (${rate}% a.m.)</div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">📈 Projeção (${rate}% a.m.)</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
           <div style="background:var(--surface-2);border-radius:14px;padding:12px;border:1px solid var(--line)">
-            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">em 3 meses</div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">3 meses</div>
             <div style="font-family:'Bebas Neue';font-size:20px;color:var(--success)">R$ ${fmt(Math.round(proj3))}</div>
-            <div style="font-size:10px;color:var(--success)">+R$ ${fmt(Math.round(proj3-D.savings))}</div>
+            <div style="font-size:10px;color:var(--success)">+R$ ${fmt(Math.round(proj3 - D.savings))}</div>
           </div>
           <div style="background:var(--surface-2);border-radius:14px;padding:12px;border:1px solid var(--line)">
-            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">em 12 meses</div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">12 meses</div>
             <div style="font-family:'Bebas Neue';font-size:20px;color:var(--success)">R$ ${fmt(Math.round(proj12))}</div>
-            <div style="font-size:10px;color:var(--success)">+R$ ${fmt(Math.round(proj12-D.savings))}</div>
+            <div style="font-size:10px;color:var(--success)">+R$ ${fmt(Math.round(proj12 - D.savings))}</div>
           </div>
         </div>
-        <p style="font-size:10px;color:var(--muted);margin-top:8px;text-align:center">Taxa configurável no Admin · Rendimento estimado, não garantido</p>
       </div>` : ''}
     </div>`;
 
-  // Resumo mensal
-  const saldo = (D.monthlyIncome||0) - (D.monthlyExpenses||0);
-  document.getElementById('resumoCard').innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-      <div class="card" style="text-align:center;padding:14px 10px">
-        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Entradas</div>
-        <div style="font-family:'Bebas Neue';font-size:22px;color:var(--success);line-height:1">R$ ${fmt(D.monthlyIncome||0)}</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:4px">este mês</div>
-      </div>
-      <div class="card" style="text-align:center;padding:14px 10px">
-        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Saídas</div>
-        <div style="font-family:'Bebas Neue';font-size:22px;color:var(--danger);line-height:1">R$ ${fmt(D.monthlyExpenses||0)}</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:4px">este mês</div>
-      </div>
-      <div class="card" style="text-align:center;padding:14px 10px;border-color:${saldo>=0?'rgba(51,177,111,.3)':'rgba(219,91,86,.3)'}">
-        <div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px">Saldo</div>
-        <div style="font-family:'Bebas Neue';font-size:22px;color:${saldo>=0?'var(--success)':'var(--danger)'};line-height:1">R$ ${fmt(Math.abs(saldo))}</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:4px">${saldo>=0?'sobra':'falta'}</div>
-      </div>
-    </div>
-    <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px">Configure valores no Admin</p>`;
-
+  // Goals / Lista de compras
   const pColors = ['var(--danger)', 'var(--accent)', 'var(--success)'];
-  const pBg = ['rgba(219,91,86,.16)', 'rgba(240,106,59,.16)', 'rgba(51,177,111,.16)'];
+  const pBg     = ['rgba(219,91,86,.16)', 'rgba(240,106,59,.16)', 'rgba(51,177,111,.16)'];
   const pLabels = ['🔥 Prioridade 1', '⭐ Prioridade 2', '📌 Prioridade 3'];
 
   document.getElementById('goalsList').innerHTML = D.goals.length
-    ? [...D.goals].sort((a, b) => a.priority - b.priority).map(g => {
-        const p = pct(g.saved, g.value);
-        const pi = (g.priority || 1) - 1;
-        return `<div class="goal-card">
-          <div class="goal-head">
-            <span class="goal-name">${g.emoji} ${g.name}</span>
-            <span class="goal-val" style="color:${pColors[pi]}">R$ ${fmt(g.value)}</span>
-          </div>
-          <p style="font-size:12px;color:var(--muted);margin-bottom:8px">${g.desc || ''}</p>
-          <div class="mini-row">
-            <span class="chip" style="background:${pBg[pi]};color:${pColors[pi]}">${pLabels[pi]}</span>
-            <span class="chip">Falta R$ ${fmt(Math.max(0, g.value - g.saved))}</span>
-          </div>
-          <div class="progress"><span style="width:${p}%;background:${pColors[pi]}"></span></div>
-        </div>`;
-      }).join('')
+    ? D.goals
+        .map((g, origIdx) => ({ ...g, _i: origIdx }))
+        .sort((a, b) => a.priority - b.priority)
+        .map(g => {
+          const p = pct(g.saved, g.value);
+          const pi = (g.priority || 1) - 1;
+          const canBuy = (D.savings || 0) >= g.value;
+          const barW   = canBuy ? 100 : p;
+          const barC   = canBuy ? 'var(--success)' : pColors[pi];
+          return `<div class="goal-card" style="${canBuy ? 'border-color:rgba(51,177,111,.4)' : ''}">
+            <div class="goal-head">
+              <span class="goal-name">${g.emoji} ${g.name}</span>
+              <span class="goal-val" style="color:${pColors[pi]}">R$ ${fmt(g.value)}</span>
+            </div>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:8px">${g.desc || ''}</p>
+            <div class="mini-row">
+              <span class="chip" style="background:${pBg[pi]};color:${pColors[pi]}">${pLabels[pi]}</span>
+              ${canBuy
+                ? `<span class="chip" style="background:var(--success-soft);color:var(--success)">✅ Tem saldo!</span>`
+                : `<span class="chip">Falta R$ ${fmt(Math.max(0, g.value - (D.savings || 0)))}</span>`}
+            </div>
+            <div class="progress"><span style="width:${barW}%;background:${barC}"></span></div>
+            ${canBuy ? `
+              <button class="btn success-btn btn-full" style="margin-top:12px" onclick="buyGoal(${g._i})">
+                🛒 Comprar agora
+              </button>` : ''}
+          </div>`;
+        }).join('')
     : `<div class="card"><p class="empty-msg">Sem metas. Adicione no Admin.</p></div>`;
 }
 
-// ========================================================
+// ============================================================
+// FIN INLINE EDIT
+// ============================================================
+function startEditFin(field) {
+  const elId = field === 'monthlyIncome' ? 'fin-income' : 'fin-expenses';
+  const cur   = D[field] || 0;
+  const color = field === 'monthlyIncome' ? 'var(--success)' : 'var(--danger)';
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.outerHTML = `<input type="number" id="${elId}" class="fin-edit-input" value="${cur}"
+    style="font-size:34px;color:${color};margin:-2px 0"
+    onblur="commitEditFin('${field}','${elId}')"
+    onkeydown="if(event.key==='Enter')this.blur()"
+    onclick="event.stopPropagation()">`;
+  const inp = document.getElementById(elId);
+  inp.focus(); inp.select();
+}
+function commitEditFin(field, elId) {
+  const inp = document.getElementById(elId);
+  if (!inp) return;
+  const v = parseFloat(inp.value);
+  if (!isNaN(v) && v >= 0) D[field] = v;
+  save(); renderMetas();
+}
+
+// ============================================================
+// BUY GOAL
+// ============================================================
+function buyGoal(i) {
+  const g = D.goals[i];
+  if (!g) return;
+  if (!confirm(`Comprar ${g.emoji} ${g.name} por R$ ${fmt(g.value)}?\n\nIsso vai descontar do cofrinho e remover da lista.`)) return;
+  D.savings = Math.max(0, (D.savings || 0) - g.value);
+  D.goals.splice(i, 1);
+  save(); renderMetas();
+}
+
+// ============================================================
 // RENDER ADMIN
-// ========================================================
+// ============================================================
 function renderAdmin() {
-  // Água
   document.getElementById('aWaterGoal').value = D.water.goal;
-
-  // Kaffa
-  document.getElementById('aKaffaName').value = D.kaffa.name;
-  document.getElementById('aKaffaDesc').value = D.kaffa.desc;
-  document.getElementById('aKaffaReward').value = D.kaffa.reward;
+  document.getElementById('aKaffaName').value    = D.kaffa.name;
+  document.getElementById('aKaffaDesc').value    = D.kaffa.desc;
+  document.getElementById('aKaffaReward').value  = D.kaffa.reward;
   document.getElementById('aKaffaPenalty').value = D.kaffa.penalty || 0;
-  document.getElementById('aKaffaTime').value = D.kaffa.time;
 
-  // Tasks
   document.getElementById('aTaskList').innerHTML = D.tasks.length
     ? D.tasks.map((t, i) => {
         const pen = t.penalty || 0;
-        return `
-        <div class="a-item">
+        return `<div class="a-item">
           <span class="a-item-icon">${t.emoji}</span>
           <div class="a-item-info">
             <strong>${t.title}</strong>
-            <span>+${t.reward} 🪙 ganho · ${pen > 0 ? `-${pen} 🪙 penalidade · ` : ''}${t.desc}</span>
+            <span>+${t.reward} 🪙 · ${pen > 0 ? `-${pen} 🪙 pen. · ` : ''}${t.desc}</span>
           </div>
           <div class="a-btns">
-            <button class="icon-btn del" title="Deletar" onclick="deleteTask(${i})">🗑</button>
+            <button class="icon-btn del" onclick="deleteTask(${i})">🗑</button>
           </div>
         </div>`;
       }).join('')
     : `<p class="empty-msg">Nenhuma missão.</p>`;
 
-  // Routine
   document.getElementById('aRoutineList').innerHTML = D.routine.length
     ? D.routine.map((r, i) => `
         <div class="a-item">
           <div style="width:10px;height:36px;border-radius:4px;background:${r.color};flex-shrink:0"></div>
           <span style="font-family:'Bebas Neue';font-size:14px;letter-spacing:.05em;color:var(--muted);width:46px;flex-shrink:0">${r.time}</span>
-          <div class="a-item-info">
-            <strong>${r.title}</strong>
-            <span>${r.desc}</span>
-          </div>
+          <div class="a-item-info"><strong>${r.title}</strong><span>${r.desc}</span></div>
           <div class="a-btns">
-            <button class="icon-btn" title="Editar" onclick="editRoutine(${i})">✏️</button>
-            <button class="icon-btn del" title="Deletar" onclick="deleteRoutine(${i})">🗑</button>
+            <button class="icon-btn" onclick="editRoutine(${i})">✏️</button>
+            <button class="icon-btn del" onclick="deleteRoutine(${i})">🗑</button>
           </div>
         </div>`).join('')
-    : `<p class="empty-msg">Nenhum bloco de rotina.</p>`;
+    : `<p class="empty-msg">Nenhum bloco.</p>`;
 
-  // Courses
   document.getElementById('aCourseList').innerHTML = D.courses.length
     ? D.courses.map((c, i) => `
         <div class="a-item">
           <span class="a-item-icon">${c.emoji}</span>
-          <div class="a-item-info">
-            <strong>${c.name}</strong>
-            <span>${c.done}/${c.total} aulas · ${pct(c.done, c.total)}%</span>
-          </div>
-          <div class="a-btns">
-            <button class="icon-btn del" title="Deletar" onclick="deleteCourse(${i})">🗑</button>
-          </div>
+          <div class="a-item-info"><strong>${c.name}</strong><span>${c.done}/${c.total} aulas · ${pct(c.done, c.total)}%</span></div>
+          <div class="a-btns"><button class="icon-btn del" onclick="deleteCourse(${i})">🗑</button></div>
         </div>`).join('')
     : `<p class="empty-msg">Nenhum curso.</p>`;
 
-  // Shop
   document.getElementById('aShopList').innerHTML = D.shop.length
     ? D.shop.map((s, i) => `
         <div class="a-item">
           <span class="a-item-icon">${s.emoji}</span>
-          <div class="a-item-info">
-            <strong>${s.name}</strong>
-            <span>🪙 ${fmt(s.price)}</span>
-          </div>
-          <div class="a-btns">
-            <button class="icon-btn del" title="Deletar" onclick="deleteShopItem(${i})">🗑</button>
-          </div>
+          <div class="a-item-info"><strong>${s.name}</strong><span>🪙 ${fmt(s.price)}</span></div>
+          <div class="a-btns"><button class="icon-btn del" onclick="deleteShopItem(${i})">🗑</button></div>
         </div>`).join('')
-    : `<p class="empty-msg">Nenhum item na loja.</p>`;
+    : `<p class="empty-msg">Nenhum item.</p>`;
 
-  // Goals
-  document.getElementById('aSavingsGoal').value = D.savingsGoal;
+  document.getElementById('aSavingsGoal').value    = D.savingsGoal;
   document.getElementById('aSavingsCurrent').value = D.savings;
-  document.getElementById('aSavingsIncome').value = D.monthlyIncome || '';
+  document.getElementById('aSavingsIncome').value  = D.monthlyIncome  || '';
   document.getElementById('aSavingsExpense').value = D.monthlyExpenses || '';
-  document.getElementById('aSavingsRate').value = D.savingsRate || 0.9;
+  document.getElementById('aSavingsRate').value    = D.savingsRate || 0.9;
+
   document.getElementById('aGoalList').innerHTML = D.goals.length
     ? D.goals.map((g, i) => `
         <div class="a-item">
           <span class="a-item-icon">${g.emoji}</span>
-          <div class="a-item-info">
-            <strong>${g.name}</strong>
-            <span>R$ ${fmt(g.value)} · Prioridade ${g.priority}</span>
-          </div>
-          <div class="a-btns">
-            <button class="icon-btn del" title="Deletar" onclick="deleteGoal(${i})">🗑</button>
-          </div>
+          <div class="a-item-info"><strong>${g.name}</strong><span>R$ ${fmt(g.value)} · Prioridade ${g.priority}</span></div>
+          <div class="a-btns"><button class="icon-btn del" onclick="deleteGoal(${i})">🗑</button></div>
         </div>`).join('')
     : `<p class="empty-msg">Sem metas.</p>`;
 
-  // Vacation toggle
+  // Notif times
+  const ns = D.notifSettings;
+  document.getElementById('notifTimesList').innerHTML = (ns.times || []).map((t, i) => `
+    <span class="notif-time-tag">⏰ ${t}
+      <button onclick="removeNotifTime(${i})" title="Remover">✕</button>
+    </span>`).join('');
+
+  document.getElementById('notifMsgList').innerHTML = (ns.messages || []).map((m, i) => `
+    <div class="a-item">
+      <div class="a-item-info"><span>${m}</span></div>
+      <div class="a-btns"><button class="icon-btn del" onclick="removeNotifMsg(${i})">🗑</button></div>
+    </div>`).join('');
+
   const on = D.vacation;
-  document.getElementById('vacThumb').style.left = on ? '24px' : '4px';
+  document.getElementById('vacThumb').style.left       = on ? '24px' : '4px';
   document.getElementById('vacThumb').style.background = on ? 'var(--success)' : 'var(--muted)';
 }
 
 function toggleAccordion(id) {
   const body = document.getElementById('body-' + id);
-  const arr = document.getElementById('arr-' + id);
+  const arr  = document.getElementById('arr-'  + id);
   const wasOpen = body.classList.contains('open');
   body.classList.toggle('open');
   arr.classList.toggle('open');
   if (!wasOpen) renderAdmin();
 }
 
-// ========================================================
+// ============================================================
 // ACTIONS — HOJE
-// ========================================================
+// ============================================================
 function completeKaffa() {
   if (D.kaffa.done) return;
-  D.kaffa.done = true;
-  D.coins += D.kaffa.reward;
+  D.kaffa.done = true; D.coins += D.kaffa.reward;
   save(); renderHoje();
 }
 
 function setTask(i, state) {
-  const prev = D.tasks[i].state;
+  const prev    = D.tasks[i].state;
   if (prev === state) return;
-  const t = D.tasks[i];
+  const t       = D.tasks[i];
   const penalty = t.penalty || 0;
-
-  // Desfazer feito → idle: tira recompensa
-  if (prev === 'done' && state === 'idle')   D.coins = Math.max(0, D.coins - t.reward);
-  // Desfazer falhou → idle: devolve penalidade
-  if (prev === 'failed' && state === 'idle') D.coins += penalty;
-  // Completar → feito: adiciona recompensa
-  if (state === 'done' && prev !== 'done')   D.coins += t.reward;
-  // Marcar falhou: desconta penalidade (exceto se veio de 'done', aí tira recompensa também)
+  if (prev === 'done'   && state === 'idle')  D.coins = Math.max(0, D.coins - t.reward);
+  if (prev === 'failed' && state === 'idle')  D.coins += penalty;
+  if (state === 'done'  && prev !== 'done')   D.coins += t.reward;
   if (state === 'failed') {
     if (prev === 'done') D.coins = Math.max(0, D.coins - t.reward);
-    if (!D.vacation) D.coins = Math.max(0, D.coins - penalty);
+    if (!D.vacation)     D.coins = Math.max(0, D.coins - penalty);
   }
-
   D.tasks[i].state = state;
   save(); renderHoje();
 }
@@ -1155,9 +1211,9 @@ function tapWater(i) {
   save(); renderHoje();
 }
 
-// ========================================================
+// ============================================================
 // ACTIONS — CURSOS
-// ========================================================
+// ============================================================
 function completeLesson(i) {
   if (D.courses[i].done >= D.courses[i].total) { alert('Curso já concluído! 🎉'); return; }
   D.courses[i].done++;
@@ -1167,9 +1223,9 @@ function completeLesson(i) {
   if (cStat) cStat.textContent = fmt(D.coins);
 }
 
-// ========================================================
+// ============================================================
 // ACTIONS — LOJA
-// ========================================================
+// ============================================================
 function buyItem(i) {
   const item = D.shop[i];
   if (D.coins < item.price) { alert('❌ Moedas insuficientes!'); return; }
@@ -1188,9 +1244,9 @@ function toggleBau() {
   b.style.display = b.style.display === 'none' ? 'block' : 'none';
 }
 
-// ========================================================
-// ADMIN SAVE ACTIONS
-// ========================================================
+// ============================================================
+// ADMIN SAVES
+// ============================================================
 function saveWaterGoal() {
   const v = parseInt(document.getElementById('aWaterGoal').value);
   if (!v || v < 1 || v > 20) { alert('Valor inválido (1-20)'); return; }
@@ -1200,9 +1256,9 @@ function saveWaterGoal() {
 }
 
 function saveKaffa() {
-  const name = document.getElementById('aKaffaName').value.trim();
-  const desc = document.getElementById('aKaffaDesc').value.trim();
-  const reward = parseInt(document.getElementById('aKaffaReward').value);
+  const name    = document.getElementById('aKaffaName').value.trim();
+  const desc    = document.getElementById('aKaffaDesc').value.trim();
+  const reward  = parseInt(document.getElementById('aKaffaReward').value);
   const penalty = parseInt(document.getElementById('aKaffaPenalty').value) || 0;
   if (!name) { alert('Nome é obrigatório!'); return; }
   D.kaffa = { ...D.kaffa, name, desc, reward: reward || D.kaffa.reward, penalty };
@@ -1210,10 +1266,10 @@ function saveKaffa() {
 }
 
 function addTask() {
-  const emoji   = document.getElementById('nTEmoji').value.trim() || '🎯';
+  const emoji   = document.getElementById('nTEmoji').value.trim()   || '🎯';
   const title   = document.getElementById('nTTitle').value.trim();
   const desc    = document.getElementById('nTDesc').value.trim();
-  const reward  = parseInt(document.getElementById('nTReward').value) || 20;
+  const reward  = parseInt(document.getElementById('nTReward').value)  || 20;
   const penalty = parseInt(document.getElementById('nTPenalty').value) || 0;
   if (!title) { alert('Título é obrigatório!'); return; }
   D.tasks.push({ emoji, title, desc, reward, penalty, state: 'idle' });
@@ -1226,7 +1282,6 @@ function deleteTask(i) {
   D.tasks.splice(i, 1); save(); renderAdmin();
 }
 
-// Mapa de nomes de cor (PT e EN) → valor CSS
 const COLOR_MAP = {
   roxo:'var(--purple)', purple:'var(--purple)',
   laranja:'var(--accent)', orange:'var(--accent)',
@@ -1244,12 +1299,10 @@ function resolveColor(raw) {
 }
 function updateColorPreview() {
   const raw = document.getElementById('nRColor').value;
-  const resolved = resolveColor(raw);
-  document.getElementById('nRColorSwatch').style.background = resolved;
+  document.getElementById('nRColorSwatch').style.background = resolveColor(raw);
 }
 
 let editingRoutineIdx = -1;
-
 function editRoutine(i) {
   const r = D.routine[i];
   editingRoutineIdx = i;
@@ -1258,10 +1311,9 @@ function editRoutine(i) {
   document.getElementById('nRDesc').value  = r.desc;
   document.getElementById('nRColor').value = r.color;
   updateColorPreview();
-  document.getElementById('nRFormLabel').textContent = `✏️ Editando: ${r.title}`;
-  document.getElementById('nRSubmitBtn').textContent = '💾 Salvar edição';
-  document.getElementById('nRCancelRow').style.display = 'block';
-  // Scroll até o formulário
+  document.getElementById('nRFormLabel').textContent  = `✏️ Editando: ${r.title}`;
+  document.getElementById('nRSubmitBtn').textContent  = '💾 Salvar edição';
+  document.getElementById('nRCancelRow').style.display= 'block';
   document.getElementById('nRTime').scrollIntoView({ behavior: 'smooth', block: 'center' });
   document.getElementById('nRTime').focus();
 }
@@ -1269,9 +1321,9 @@ function cancelEditRoutine() {
   editingRoutineIdx = -1;
   ['nRTime','nRTitle','nRDesc','nRColor'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('nRColorSwatch').style.background = 'var(--accent)';
-  document.getElementById('nRFormLabel').textContent = 'Adicionar bloco de horário';
-  document.getElementById('nRSubmitBtn').textContent = '+ Adicionar';
-  document.getElementById('nRCancelRow').style.display = 'none';
+  document.getElementById('nRFormLabel').textContent  = 'Adicionar bloco de horário';
+  document.getElementById('nRSubmitBtn').textContent  = '+ Adicionar';
+  document.getElementById('nRCancelRow').style.display= 'none';
 }
 function saveRoutineForm() {
   const time  = document.getElementById('nRTime').value.trim();
@@ -1279,15 +1331,10 @@ function saveRoutineForm() {
   const desc  = document.getElementById('nRDesc').value.trim();
   const color = resolveColor(document.getElementById('nRColor').value);
   if (!time || !title) { alert('Horário e título são obrigatórios!'); return; }
-  if (editingRoutineIdx >= 0) {
-    D.routine[editingRoutineIdx] = { time, title, desc, color };
-  } else {
-    D.routine.push({ time, title, desc, color });
-  }
+  if (editingRoutineIdx >= 0) D.routine[editingRoutineIdx] = { time, title, desc, color };
+  else D.routine.push({ time, title, desc, color });
   D.routine.sort((a, b) => a.time.localeCompare(b.time));
-  save();
-  cancelEditRoutine();
-  renderAdmin();
+  save(); cancelEditRoutine(); renderAdmin();
 }
 function deleteRoutine(i) {
   if (!confirm(`Deletar "${D.routine[i].title}"?`)) return;
@@ -1299,8 +1346,8 @@ function addCourse() {
   const emoji = document.getElementById('nCEmoji').value.trim() || '📖';
   const name  = document.getElementById('nCName').value.trim();
   const total = parseInt(document.getElementById('nCTotal').value) || 0;
-  const done  = parseInt(document.getElementById('nCDone').value) || 0;
-  if (!name || total <= 0) { alert('Nome e total de aulas são obrigatórios!'); return; }
+  const done  = parseInt(document.getElementById('nCDone').value)  || 0;
+  if (!name || total <= 0) { alert('Nome e total são obrigatórios!'); return; }
   D.courses.push({ emoji, name, total, done: Math.min(done, total), cpp: 20 });
   save();
   ['nCEmoji','nCName','nCTotal','nCDone'].forEach(id => document.getElementById(id).value = '');
@@ -1330,28 +1377,24 @@ function addToSavings(amount) {
   D.savings = Math.max(0, (D.savings || 0) + amount);
   save(); renderMetas();
 }
-function promptAddSavings() {
-  const v = parseFloat(prompt('Valor a adicionar (use - para subtrair, ex: -50):'));
-  if (!isNaN(v)) { D.savings = Math.max(0, (D.savings||0) + v); save(); renderMetas(); }
-}
 function saveSavings() {
   const goal    = parseFloat(document.getElementById('aSavingsGoal').value);
   const cur     = parseFloat(document.getElementById('aSavingsCurrent').value);
   const income  = parseFloat(document.getElementById('aSavingsIncome').value);
   const expense = parseFloat(document.getElementById('aSavingsExpense').value);
   const rate    = parseFloat(document.getElementById('aSavingsRate').value);
-  if (goal > 0) D.savingsGoal = goal;
-  if (!isNaN(cur)  && cur >= 0) D.savings = cur;
-  if (!isNaN(income)  && income >= 0) D.monthlyIncome  = income;
-  if (!isNaN(expense) && expense >= 0) D.monthlyExpenses = expense;
-  if (!isNaN(rate)  && rate >= 0) D.savingsRate = rate;
+  if (goal   > 0)               D.savingsGoal     = goal;
+  if (!isNaN(cur)     && cur >= 0)    D.savings         = cur;
+  if (!isNaN(income)  && income >= 0) D.monthlyIncome   = income;
+  if (!isNaN(expense) && expense >= 0)D.monthlyExpenses  = expense;
+  if (!isNaN(rate)    && rate >= 0)   D.savingsRate     = rate;
   save(); alert('✓ Financeiro atualizado!'); renderMetas();
 }
 function addGoal() {
-  const emoji = document.getElementById('nGEmoji').value.trim() || '🎯';
-  const name  = document.getElementById('nGName').value.trim();
-  const value = parseFloat(document.getElementById('nGValue').value) || 0;
-  const priority = parseInt(document.getElementById('nGPriority').value) || 1;
+  const emoji    = document.getElementById('nGEmoji').value.trim()    || '🎯';
+  const name     = document.getElementById('nGName').value.trim();
+  const value    = parseFloat(document.getElementById('nGValue').value)   || 0;
+  const priority = parseInt(document.getElementById('nGPriority').value)  || 1;
   if (!name || value <= 0) { alert('Nome e valor são obrigatórios!'); return; }
   D.goals.push({ emoji, name, value, saved: 0, priority, desc: '' });
   save();
@@ -1364,32 +1407,112 @@ function deleteGoal(i) {
 }
 
 function toggleVacation() {
-  D.vacation = !D.vacation;
-  save();
+  D.vacation = !D.vacation; save();
   const on = D.vacation;
-  document.getElementById('vacThumb').style.left = on ? '24px' : '4px';
+  document.getElementById('vacThumb').style.left       = on ? '24px' : '4px';
   document.getElementById('vacThumb').style.background = on ? 'var(--success)' : 'var(--muted)';
 }
-
 function resetDay() {
   if (!confirm('Resetar o dia? Missões voltam para pendente e água vai pra zero.')) return;
-  D.kaffa.done = false;
-  D.tasks.forEach(t => t.state = 'idle');
-  D.water.current = 0;
+  D.kaffa.done = false; D.tasks.forEach(t => t.state = 'idle'); D.water.current = 0;
   save(); renderHoje(); alert('✓ Dia resetado!');
 }
-
 function resetAll() {
   if (!confirm('⚠️ Isso apaga TODOS os dados. Tem certeza?')) return;
   if (!confirm('Última chance — tem certeza mesmo?')) return;
-  localStorage.removeItem('stabHub3');
-  D = JSON.parse(JSON.stringify(DEFAULT));
+  localStorage.removeItem('stabHub3'); D = JSON.parse(JSON.stringify(DEFAULT));
   save(); location.reload();
 }
 
-// ========================================================
-// SWIPE GESTURE
-// ========================================================
+// ============================================================
+// NOTIFICAÇÕES
+// ============================================================
+const NOTIF_MSGS_DEFAULT = [
+  'Bora treinar hoje! 💪 Não perde o streak!',
+  'Hora de acordar! ☀️ Começa o dia forte.',
+  'Já fez as missões de hoje? 👑 Bora lá!',
+  'Bora estudar! 💻 Um bloco por dia faz diferença.',
+  'Missões pendentes te esperando! 🎯 Foca.',
+  'Bora acordar, vai ser um dia incrível! 🔥',
+  'Não deixa o streak quebrar! 🔥 Bora!'
+];
+
+function requestNotifications() {
+  if (!('Notification' in window)) { alert('Este browser não suporta notificações.'); return; }
+  Notification.requestPermission().then(perm => {
+    if (perm === 'granted') {
+      D.notifSettings.enabled = true;
+      save(); scheduleAllNotifs();
+      alert('✓ Notificações ativadas! Lembretes nos horários configurados.');
+    } else {
+      alert('Permissão negada. Verifique as configurações do browser.');
+    }
+  });
+}
+
+function getRandomMsg() {
+  const msgs = (D.notifSettings.messages && D.notifSettings.messages.length)
+    ? D.notifSettings.messages
+    : NOTIF_MSGS_DEFAULT;
+  return msgs[Math.floor(Math.random() * msgs.length)];
+}
+
+function scheduleAllNotifs() {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  if (!D.notifSettings.enabled) return;
+  const times = D.notifSettings.times || ['08:00'];
+  times.forEach(t => scheduleNotifAt(t));
+}
+
+function scheduleNotifAt(timeStr) {
+  const [hh, mm] = timeStr.split(':').map(Number);
+  const now = Date.now();
+  const d = new Date(); d.setHours(hh, mm, 0, 0);
+  if (d.getTime() <= now) d.setDate(d.getDate() + 1);
+  const delay = d.getTime() - now;
+  setTimeout(() => {
+    if (Notification.permission !== 'granted') return;
+    new Notification('Hub da Rotina 👑', {
+      body: getRandomMsg(),
+      icon: document.getElementById('appIconLink')?.href || ''
+    });
+    // Re-agendar para o próximo dia
+    setTimeout(() => scheduleNotifAt(timeStr), 1000);
+  }, delay);
+}
+
+function addNotifTime() {
+  const t = document.getElementById('newNotifTime').value;
+  if (!t) return;
+  if (!D.notifSettings.times) D.notifSettings.times = [];
+  if (D.notifSettings.times.includes(t)) { alert('Esse horário já existe.'); return; }
+  D.notifSettings.times.push(t);
+  D.notifSettings.times.sort();
+  save(); renderAdmin();
+  if (D.notifSettings.enabled) scheduleNotifAt(t);
+}
+function removeNotifTime(i) {
+  D.notifSettings.times.splice(i, 1); save(); renderAdmin();
+}
+function addNotifMsg() {
+  const msg = document.getElementById('newNotifMsg').value.trim();
+  if (!msg) return;
+  if (!D.notifSettings.messages) D.notifSettings.messages = [];
+  D.notifSettings.messages.push(msg);
+  save();
+  document.getElementById('newNotifMsg').value = '';
+  renderAdmin();
+}
+function removeNotifMsg(i) {
+  D.notifSettings.messages.splice(i, 1); save(); renderAdmin();
+}
+
+// Agendar ao abrir (se ativado)
+if (D.notifSettings && D.notifSettings.enabled) scheduleAllNotifs();
+
+// ============================================================
+// SWIPE GESTURE  (fix: detecta direção antes de bloquear scroll)
+// ============================================================
 function initSwipeAll() {
   document.querySelectorAll('.task-card[data-swipe]').forEach(el => {
     initSwipe(el, parseInt(el.getAttribute('data-swipe')));
@@ -1397,22 +1520,31 @@ function initSwipeAll() {
 }
 
 function initSwipe(el, idx) {
-  let startX = 0, curX = 0, dragging = false;
+  let startX = 0, startY = 0, curX = 0;
+  let dragging = false, dirLocked = false, isHoriz = false;
   const THRESHOLD = 80;
   const hintR = el.querySelector('.sh-done');
   const hintL = el.querySelector('.sh-fail');
 
-  function onStart(x) {
-    startX = x; curX = x; dragging = true;
+  function onStart(x, y) {
+    startX = x; startY = y; curX = x;
+    dragging = true; dirLocked = false; isHoriz = false;
     el.style.transition = 'none';
   }
 
-  function onMove(x) {
+  function onMove(x, y) {
     if (!dragging) return;
+    const dx = x - startX;
+    const dy = y - startY;
+    if (!dirLocked && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
+      dirLocked = true;
+      isHoriz = Math.abs(dx) > Math.abs(dy);
+      if (isHoriz) el.classList.add('swiping-h');
+    }
+    if (!isHoriz) return; // deixa o scroll vertical acontecer
     curX = x;
-    const dx = curX - startX;
     el.style.transform = `translateX(${dx}px) rotate(${dx * 0.025}deg)`;
-    el.style.opacity = String(1 - Math.abs(dx) / 320);
+    el.style.opacity   = String(1 - Math.abs(dx) / 320);
     const prog = Math.min(Math.abs(dx) / THRESHOLD, 1);
     if (dx > 0) {
       el.style.background = `color-mix(in srgb, var(--surface) ${100 - prog*28}%, var(--success) ${prog*28}%)`;
@@ -1432,41 +1564,48 @@ function initSwipe(el, idx) {
   function onEnd() {
     if (!dragging) return;
     dragging = false;
+    el.classList.remove('swiping-h');
+    if (!isHoriz) return;
     const dx = curX - startX;
     el.style.transition = 'transform .28s ease, opacity .28s ease';
     if (dx > THRESHOLD) {
       el.style.transform = 'translateX(130%) rotate(15deg)';
-      el.style.opacity = '0';
+      el.style.opacity   = '0';
       setTimeout(() => setTask(idx, 'done'), 280);
     } else if (dx < -THRESHOLD) {
       el.style.transform = 'translateX(-130%) rotate(-15deg)';
-      el.style.opacity = '0';
+      el.style.opacity   = '0';
       setTimeout(() => setTask(idx, 'failed'), 280);
     } else {
-      el.style.transform = '';
-      el.style.opacity = '';
+      el.style.transform  = '';
+      el.style.opacity    = '';
       el.style.background = '';
       if (hintR) hintR.style.opacity = 0;
       if (hintL) hintL.style.opacity = 0;
     }
   }
 
-  // Touch
-  el.addEventListener('touchstart', e => onStart(e.touches[0].clientX), { passive: true });
-  el.addEventListener('touchmove',  e => { e.preventDefault(); onMove(e.touches[0].clientX); }, { passive: false });
-  el.addEventListener('touchend',   () => onEnd());
+  el.addEventListener('touchstart', e => onStart(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+  el.addEventListener('touchmove',  e => {
+    const dx = e.touches[0].clientX - startX;
+    const dy = e.touches[0].clientY - startY;
+    if (dirLocked && isHoriz) e.preventDefault();
+    else if (!dirLocked && Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 6) e.preventDefault();
+    onMove(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: false });
+  el.addEventListener('touchend', () => onEnd());
 
   // Mouse (desktop)
-  el.addEventListener('mousedown', e => { e.preventDefault(); onStart(e.clientX); });
-  const mm = e => { if (dragging) onMove(e.clientX); };
+  el.addEventListener('mousedown', e => { e.preventDefault(); onStart(e.clientX, e.clientY); });
+  const mm = e => { if (dragging) onMove(e.clientX, e.clientY); };
   const mu = () => { if (dragging) onEnd(); };
   document.addEventListener('mousemove', mm);
   document.addEventListener('mouseup',   mu);
 }
 
-// ========================================================
+// ============================================================
 // DIETA
-// ========================================================
+// ============================================================
 function renderDieta() {
   const notes = D.dietNotes || [];
   document.getElementById('dietaNotes').innerHTML = notes.length
@@ -1476,32 +1615,28 @@ function renderDieta() {
           <div style="flex:1;font-size:13px;font-weight:500">${n.text}</div>
           <button class="icon-btn del" onclick="deleteDietNote(${i})">🗑</button>
         </div>`).join('')
-    : `<div class="card"><p class="empty-msg">Sem anotações ainda. Adicione suas metas de alimentação!</p></div>`;
+    : `<div class="card"><p class="empty-msg">Sem anotações ainda.</p></div>`;
 }
 function addDietNote() {
   const emoji = document.getElementById('dNEmoji').value.trim() || '🥗';
   const text  = document.getElementById('dNText').value.trim();
   if (!text) { alert('Escreva algo!'); return; }
   if (!D.dietNotes) D.dietNotes = [];
-  D.dietNotes.push({ emoji, text });
-  save();
+  D.dietNotes.push({ emoji, text }); save();
   document.getElementById('dNEmoji').value = '';
   document.getElementById('dNText').value  = '';
   renderDieta();
 }
-function deleteDietNote(i) {
-  D.dietNotes.splice(i, 1); save(); renderDieta();
-}
+function deleteDietNote(i) { D.dietNotes.splice(i, 1); save(); renderDieta(); }
 
-// ========================================================
+// ============================================================
 // NAVIGATION
-// ========================================================
+// ============================================================
 function showTab(id, btn) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if (btn) btn.classList.add('active');
-
   if (id === 'hoje')   renderHoje();
   if (id === 'rotina') renderRotina();
   if (id === 'cursos') renderCursos();
@@ -1511,7 +1646,6 @@ function showTab(id, btn) {
   if (id === 'admin')  renderAdmin();
 }
 
-// Theme
 document.getElementById('themeBtn').addEventListener('click', function() {
   const html = document.documentElement;
   const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
@@ -1519,105 +1653,71 @@ document.getElementById('themeBtn').addEventListener('click', function() {
   this.textContent = next === 'dark' ? '☾' : '☼';
 });
 
-// ========================================================
-// PWA ICON (SVG inline como base64)
-// ========================================================
+// ============================================================
+// PWA ICON — black bg, orange + white
+// ============================================================
 (function setupPWA() {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
     <rect width="512" height="512" rx="110" fill="#0f0f10"/>
-    <circle cx="256" cy="256" r="200" fill="none" stroke="url(#g1)" stroke-width="14" opacity=".7"/>
-    <defs>
-      <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#33b16f"/>
-        <stop offset="100%" stop-color="#4d8fd2"/>
-      </linearGradient>
-    </defs>
-    <!-- barbell topo -->
-    <rect x="190" y="68" width="132" height="18" rx="9" fill="#f0f0f0"/>
-    <rect x="180" y="58" width="22" height="38" rx="8" fill="#aaa"/>
-    <rect x="310" y="58" width="22" height="38" rx="8" fill="#aaa"/>
-    <!-- livro esquerda -->
-    <rect x="62" y="218" width="70" height="80" rx="8" fill="#4d8fd2"/>
-    <rect x="96" y="218" width="4" height="80" fill="#3a7ab8"/>
-    <rect x="68" y="230" width="24" height="4" rx="2" fill="#fff" opacity=".5"/>
-    <rect x="68" y="240" width="20" height="4" rx="2" fill="#fff" opacity=".5"/>
-    <!-- checklist base -->
-    <rect x="206" y="372" width="100" height="80" rx="10" fill="#26262b"/>
-    <rect x="218" y="388" width="14" height="14" rx="3" fill="#33b16f"/>
-    <line x1="221" y1="395" x2="224" y2="399" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-    <line x1="224" y1="399" x2="230" y2="390" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-    <rect x="236" y="392" width="58" height="6" rx="3" fill="#555"/>
-    <rect x="218" y="408" width="14" height="14" rx="3" fill="#33b16f"/>
-    <line x1="221" y1="415" x2="224" y2="419" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-    <line x1="224" y1="419" x2="230" y2="410" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-    <rect x="236" y="412" width="44" height="6" rx="3" fill="#555"/>
-    <!-- moedas direita -->
-    <circle cx="390" cy="232" r="28" fill="#f3b63f"/>
-    <text x="390" y="239" text-anchor="middle" font-family="Arial" font-weight="bold" font-size="18" fill="#8a5a00">R$</text>
-    <circle cx="400" cy="255" r="20" fill="#e8a93a"/>
-    <!-- LS initials -->
-    <text x="380" y="460" font-family="Arial Black,sans-serif" font-weight="900" font-size="42" fill="white" opacity=".15">LS</text>
+    <!-- outer ring orange -->
+    <circle cx="256" cy="256" r="200" fill="none" stroke="#f06a3b" stroke-width="10" opacity=".35"/>
+    <!-- barbell top white -->
+    <rect x="190" y="68" width="132" height="18" rx="9" fill="#f06a3b"/>
+    <rect x="178" y="56" width="24" height="42" rx="9" fill="#ffffff"/>
+    <rect x="310" y="56" width="24" height="42" rx="9" fill="#ffffff"/>
+    <!-- book left white/orange -->
+    <rect x="62" y="214" width="72" height="84" rx="10" fill="#f06a3b" opacity=".85"/>
+    <rect x="97" y="214" width="5" height="84" fill="#0f0f10" opacity=".5"/>
+    <rect x="70" y="228" width="22" height="4" rx="2" fill="#fff" opacity=".7"/>
+    <rect x="70" y="238" width="18" height="4" rx="2" fill="#fff" opacity=".5"/>
+    <!-- checklist white/orange -->
+    <rect x="204" y="372" width="104" height="82" rx="12" fill="#1d1d21"/>
+    <rect x="216" y="386" width="14" height="14" rx="3" fill="#f06a3b"/>
+    <line x1="219" y1="393" x2="222" y2="397" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+    <line x1="222" y1="397" x2="228" y2="389" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+    <rect x="234" y="390" width="58" height="6" rx="3" fill="#ffffff" opacity=".4"/>
+    <rect x="216" y="406" width="14" height="14" rx="3" fill="#f06a3b"/>
+    <line x1="219" y1="413" x2="222" y2="417" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+    <line x1="222" y1="417" x2="228" y2="409" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+    <rect x="234" y="410" width="44" height="6" rx="3" fill="#ffffff" opacity=".4"/>
+    <!-- coin right orange -->
+    <circle cx="390" cy="228" r="30" fill="#f06a3b"/>
+    <circle cx="390" cy="228" r="24" fill="#d9541a"/>
+    <text x="390" y="235" text-anchor="middle" font-family="Arial Black,sans-serif" font-weight="900" font-size="17" fill="#ffffff">R$</text>
+    <!-- LS watermark -->
+    <text x="370" y="468" font-family="Arial Black,sans-serif" font-weight="900" font-size="46" fill="white" opacity=".1">LS</text>
   </svg>`;
   const b64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
   document.getElementById('appIconLink').href = b64;
-  document.getElementById('faviconLink').href  = b64;
+  document.getElementById('faviconLink').href = b64;
+  document.getElementById('appLogoEl').querySelector('svg') && (document.getElementById('appLogoEl').innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 18V6l7-2 7 2v12l-7 2-7-2Z"/><path d="M12 4v16"/><path d="M5 9.5 12 12l7-2.5"/>
+    </svg>`);
 
-  // Inline manifest para PWA
   const manifest = {
-    name: 'Hub da Rotina',
-    short_name: 'Hub',
-    start_url: './',
-    display: 'standalone',
-    background_color: '#0f0f10',
-    theme_color: '#0f0f10',
+    name: 'Hub da Rotina', short_name: 'Hub',
+    start_url: './', display: 'standalone',
+    background_color: '#0f0f10', theme_color: '#0f0f10',
     icons: [{ src: b64, sizes: '512x512', type: 'image/svg+xml' }]
   };
-  const mBlob = new Blob([JSON.stringify(manifest)], {type:'application/manifest+json'});
-  const mUrl  = URL.createObjectURL(mBlob);
+  const mBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
   const mLink = document.createElement('link');
-  mLink.rel = 'manifest'; mLink.href = mUrl;
+  mLink.rel = 'manifest'; mLink.href = URL.createObjectURL(mBlob);
   document.head.appendChild(mLink);
 })();
 
-// ========================================================
-// NOTIFICAÇÕES
-// ========================================================
-function requestNotifications() {
-  if (!('Notification' in window)) return;
-  Notification.requestPermission().then(perm => {
-    if (perm === 'granted') {
-      localStorage.setItem('notifEnabled', '1');
-      scheduleNotif();
-      alert('✓ Notificações ativadas! Você receberá um lembrete diário às 8h.');
-    }
-  });
-}
-function scheduleNotif() {
-  if (!('Notification' in window) || Notification.permission !== 'granted') return;
-  const lastSent = parseInt(localStorage.getItem('lastNotif') || '0');
-  const now = Date.now();
-  const msUntil8am = (() => {
-    const d = new Date(); d.setHours(8, 0, 0, 0);
-    if (d.getTime() < now) d.setDate(d.getDate() + 1);
-    return d.getTime() - now;
-  })();
-  if (now - lastSent > 20 * 60 * 60 * 1000) { // se faz mais de 20h desde última
-    setTimeout(() => {
-      new Notification('Hub da Rotina 👑', {
-        body: 'Bora marcar as missões de hoje? Não perde o streak!',
-        icon: document.getElementById('appIconLink')?.href || ''
-      });
-      localStorage.setItem('lastNotif', String(Date.now()));
-    }, msUntil8am);
-  }
-}
-// Tenta agendar ao abrir (se já tiver permissão)
-if (localStorage.getItem('notifEnabled') === '1') scheduleNotif();
-
-// ========================================================
-// INIT
-// ========================================================
+// ============================================================
+// INIT + SPLASH
+// ============================================================
 renderHoje();
+
+// Splash: fade out após 1.4s
+setTimeout(() => {
+  const splash = document.getElementById('splash');
+  splash.classList.add('hide');
+  setTimeout(() => { splash.style.display = 'none'; }, 550);
+}, 1400);
 </script>
 </body>
 </html>
