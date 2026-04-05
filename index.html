@@ -343,36 +343,47 @@
     <div class="shop-grid" id="shopList"></div>
   </section>
 
-  <!-- ===== METAS ===== -->
-  <section class="section" id="metas">
-    <div class="section-head"><h2>Financeiro</h2><span>💰 toque para editar</span></div>
-    <div id="finCard"></div>
-
-    <div class="section-head" style="margin-top:18px"><h2>Cofrinho</h2><span>🐷 poupança</span></div>
-    <div id="cofrinhoCard"></div>
-
-    <div class="section-head" style="margin-top:18px"><h2>Lista de compras</h2><span>prioridades</span></div>
-    <div class="stack" id="goalsList"></div>
-  </section>
-
   <!-- ===== DIETA ===== -->
   <section class="section" id="dieta">
-    <div class="section-head"><h2>Alimentação</h2><span>em breve</span></div>
-    <div class="card" style="text-align:center;padding:32px 20px">
-      <div style="font-size:52px;margin-bottom:12px">🥗</div>
-      <h3 style="font-size:18px;margin-bottom:8px">Aba em construção</h3>
-      <p style="font-size:13px;color:var(--muted);line-height:1.6;max-width:28ch;margin:0 auto">Em breve você vai poder acompanhar sua dieta e metas de alimentação aqui.</p>
-    </div>
-    <div class="section-head" style="margin-top:20px"><h2>Minhas metas</h2><span>anotações</span></div>
-    <div class="stack" id="dietaNotes"></div>
-    <div class="card" style="margin-top:12px">
-      <span class="form-label" style="display:block;margin-bottom:10px">Adicionar anotação</span>
-      <div class="f-row">
-        <input type="text" class="f-input w-sm" id="dNEmoji" placeholder="🥦">
-        <input type="text" class="f-input" id="dNText" placeholder="Ex: Comer 150g proteína/dia">
-        <button class="btn primary btn-sm" onclick="addDietNote()">+</button>
+    <div class="section-head"><h2>Alimentação</h2><span>registro do dia</span></div>
+
+    <!-- Resumo proteína -->
+    <div class="hero" id="dietSummaryCard"></div>
+
+    <!-- Macros secundários -->
+    <div class="stats" id="dietMacroStats" style="margin-bottom:18px"></div>
+
+    <!-- Formulário -->
+    <div class="card" style="margin-bottom:12px">
+      <span class="form-label" style="display:block;margin-bottom:10px">Adicionar alimento / refeição</span>
+      <div class="f-row" style="margin-bottom:8px">
+        <input type="text" class="f-input" id="dFName" placeholder="Nome do alimento ou refeição">
       </div>
+      <div class="f-row" style="margin-bottom:8px">
+        <input type="number" class="f-input" id="dFProtein" placeholder="Proteína (g)" min="0">
+        <input type="number" class="f-input" id="dFCalories" placeholder="Calorias (kcal)" min="0">
+      </div>
+      <div class="f-row" style="margin-bottom:12px">
+        <input type="number" class="f-input" id="dFCarbs" placeholder="Carboidratos (g)" min="0">
+        <input type="number" class="f-input" id="dFFat" placeholder="Gordura (g)" min="0">
+      </div>
+      <button class="btn primary btn-full" onclick="addDietItem()">+ Adicionar</button>
     </div>
+
+    <!-- Lista -->
+    <div class="section-head"><h2>Refeições do dia</h2><span id="dietItemCount">0 registros</span></div>
+    <div class="stack" id="dietItemList"></div>
+
+    <!-- Análise -->
+    <div id="dietAnalysis" style="margin-top:12px"></div>
+  </section>
+
+  <!-- ===== TREINO ===== -->
+  <section class="section" id="treino">
+    <div class="section-head"><h2>Treino</h2><span>gym & progresso</span></div>
+    <div class="hero" id="gymWeekCard"></div>
+    <div class="section-head" style="margin-top:4px"><h2>Meus exercícios</h2><span>metas de carga</span></div>
+    <div class="stack" id="gymExerciseList"></div>
   </section>
 
   <!-- ===== ADMIN ===== -->
@@ -425,7 +436,7 @@
         <div class="admin-body" id="body-tasks">
           <div id="aTaskList" style="margin-top:12px"></div>
           <div class="admin-form">
-            <span class="form-label">Adicionar nova missão</span>
+            <span class="form-label" id="nTFormLabel">Adicionar nova missão</span>
             <div class="f-row">
               <input type="text" class="f-input w-sm" id="nTEmoji" placeholder="🎯">
               <input type="text" class="f-input" id="nTTitle" placeholder="Título da missão">
@@ -434,7 +445,22 @@
             <div class="f-row">
               <input type="number" class="f-input" id="nTReward" placeholder="🪙 Recompensa">
               <input type="number" class="f-input" id="nTPenalty" placeholder="⚠️ Penalidade">
-              <button class="btn primary btn-sm" onclick="addTask()">+</button>
+              <button class="btn primary btn-sm" id="nTSubmitBtn" onclick="saveTaskForm()">+</button>
+            </div>
+            <div class="f-row" style="margin-bottom:8px">
+              <select class="f-input" id="nTDays" multiple style="height:72px;font-size:12px">
+                <option value="0" selected>Segunda</option>
+                <option value="1" selected>Terça</option>
+                <option value="2" selected>Quarta</option>
+                <option value="3" selected>Quinta</option>
+                <option value="4" selected>Sexta</option>
+                <option value="5" selected>Sábado</option>
+                <option value="6" selected>Domingo</option>
+              </select>
+            </div>
+            <p style="font-size:10px;color:var(--muted);margin-bottom:8px">Segure Ctrl/Cmd para selecionar múltiplos dias. Selecione todos para missão diária.</p>
+            <div id="nTCancelRow" style="display:none;margin-top:8px">
+              <button class="btn btn-sm btn-full" onclick="cancelEditTask()">✕ Cancelar edição</button>
             </div>
           </div>
         </div>
@@ -476,7 +502,7 @@
         <div class="admin-body" id="body-courses">
           <div id="aCourseList" style="margin-top:12px"></div>
           <div class="admin-form">
-            <span class="form-label">Adicionar curso</span>
+            <span class="form-label" id="nCFormLabel">Adicionar curso</span>
             <div class="f-row">
               <input type="text" class="f-input w-sm" id="nCEmoji" placeholder="📖">
               <input type="text" class="f-input" id="nCName" placeholder="Nome do curso">
@@ -484,7 +510,10 @@
             <div class="f-row">
               <input type="number" class="f-input" id="nCTotal" placeholder="Total de aulas">
               <input type="number" class="f-input" id="nCDone" placeholder="Aulas feitas">
-              <button class="btn primary btn-sm" onclick="addCourse()">+</button>
+              <button class="btn primary btn-sm" id="nCSubmitBtn" onclick="saveCourseForm()">+</button>
+            </div>
+            <div id="nCCancelRow" style="display:none;margin-top:8px">
+              <button class="btn btn-sm btn-full" onclick="cancelEditCourse()">✕ Cancelar edição</button>
             </div>
           </div>
         </div>
@@ -499,12 +528,15 @@
         <div class="admin-body" id="body-shop">
           <div id="aShopList" style="margin-top:12px"></div>
           <div class="admin-form">
-            <span class="form-label">Adicionar item à loja</span>
+            <span class="form-label" id="nSFormLabel">Adicionar item à loja</span>
             <div class="f-row">
               <input type="text" class="f-input w-sm" id="nSEmoji" placeholder="🎁">
               <input type="text" class="f-input" id="nSName" placeholder="Nome do item">
               <input type="number" class="f-input w-sm" id="nSPrice" placeholder="🪙">
-              <button class="btn primary btn-sm" onclick="addShopItem()">+</button>
+              <button class="btn primary btn-sm" id="nSSubmitBtn" onclick="saveShopForm()">+</button>
+            </div>
+            <div id="nSCancelRow" style="display:none;margin-top:8px">
+              <button class="btn btn-sm btn-full" onclick="cancelEditShopItem()">✕ Cancelar edição</button>
             </div>
           </div>
         </div>
@@ -550,6 +582,77 @@
                 <option value="3">Prioridade 3 📌</option>
               </select>
               <button class="btn primary btn-sm" onclick="addGoal()">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Perfil -->
+      <div class="admin-card">
+        <div class="admin-hdr" onclick="toggleAccordion('profile')">
+          <div class="admin-hdr-left"><div class="admin-icon">👤</div><div><h3>Meu Perfil</h3><p>Altura, peso e metas nutricionais</p></div></div>
+          <span class="admin-arrow" id="arr-profile">▼</span>
+        </div>
+        <div class="admin-body" id="body-profile">
+          <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px">
+            <div class="f-row">
+              <input type="number" class="f-input" id="aPHeight" placeholder="Altura (cm)" min="100" max="250">
+              <input type="number" class="f-input" id="aPWeight" placeholder="Peso (kg)" min="30" max="300">
+              <input type="number" class="f-input" id="aPAge" placeholder="Idade" min="10" max="100">
+            </div>
+            <div class="f-row">
+              <select class="f-input" id="aPActivity">
+                <option value="1.2">Sedentário</option>
+                <option value="1.375">Levemente ativo</option>
+                <option value="1.55" selected>Moderadamente ativo</option>
+                <option value="1.725">Muito ativo</option>
+                <option value="1.9">Extremamente ativo</option>
+              </select>
+            </div>
+            <button class="btn primary btn-full" onclick="saveProfile()">Salvar e recalcular metas</button>
+            <div id="profileCalcResult" class="note" style="display:none"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Semana de Treino -->
+      <div class="admin-card">
+        <div class="admin-hdr" onclick="toggleAccordion('gymweek')">
+          <div class="admin-hdr-left"><div class="admin-icon">📅</div><div><h3>Semana de Treino</h3><p>O que treinar em cada dia</p></div></div>
+          <span class="admin-arrow" id="arr-gymweek">▼</span>
+        </div>
+        <div class="admin-body" id="body-gymweek">
+          <div id="gymWeekInputs" style="margin-top:12px"></div>
+          <button class="btn primary btn-full" style="margin-top:12px" onclick="saveGymWeekPlan()">💾 Salvar semana</button>
+        </div>
+      </div>
+
+      <!-- Exercícios / Metas de Carga -->
+      <div class="admin-card">
+        <div class="admin-hdr" onclick="toggleAccordion('gymex')">
+          <div class="admin-hdr-left"><div class="admin-icon">🏋️</div><div><h3>Exercícios</h3><p>Metas de carga e recompensas</p></div></div>
+          <span class="admin-arrow" id="arr-gymex">▼</span>
+        </div>
+        <div class="admin-body" id="body-gymex">
+          <div id="aGymList" style="margin-top:12px"></div>
+          <div class="admin-form">
+            <span class="form-label" id="nGymFormLabel">Adicionar exercício</span>
+            <div class="f-row">
+              <input type="text" class="f-input w-sm" id="nGymEmoji" placeholder="🏋️">
+              <input type="text" class="f-input" id="nGymName" placeholder="Nome do exercício">
+              <input type="text" class="f-input w-sm" id="nGymUnit" placeholder="kg">
+            </div>
+            <div class="f-row">
+              <input type="number" class="f-input" id="nGymCurrent" placeholder="Atual">
+              <input type="number" class="f-input" id="nGymGoal" placeholder="Meta">
+            </div>
+            <div class="f-row">
+              <input type="number" class="f-input" id="nGymRewardStep" placeholder="🪙 por +5">
+              <input type="number" class="f-input" id="nGymRewardGoal" placeholder="🪙 ao bater meta">
+              <button class="btn primary btn-sm" id="nGymSubmitBtn" onclick="saveGymExerciseForm()">+</button>
+            </div>
+            <div id="nGymCancelRow" style="display:none;margin-top:8px">
+              <button class="btn btn-sm btn-full" onclick="cancelEditGymExercise()">✕ Cancelar edição</button>
             </div>
           </div>
         </div>
@@ -630,9 +733,9 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
       <span>Loja</span>
     </button>
-    <button onclick="showTab('metas',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-      <span>Metas</span>
+    <button onclick="showTab('treino',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M3 8h4M17 8h4M3 16h4M17 16h4"/></svg>
+      <span>Treino</span>
     </button>
     <button onclick="showTab('dieta',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M12 6v6l4 2"/><path d="M8 14s1 2 4 2 4-2 4-2"/></svg>
@@ -652,10 +755,10 @@ const DEFAULT = {
   water: { current: 0, goal: 6 },
   kaffa: { name: 'Missão Principal', desc: 'Descreva sua missão mais importante do dia.', reward: 100, penalty: 0, done: false },
   tasks: [
-    { emoji: '⏰', title: 'Acordar cedo',    desc: 'Sem soneca, levanta direto.',       reward: 30, penalty: 15, state: 'idle' },
-    { emoji: '🏋️', title: 'Treino do dia',   desc: 'Foco total no treino.',             reward: 35, penalty: 20, state: 'idle' },
-    { emoji: '💻', title: 'Estudo / Projeto',desc: 'Bloco profundo de estudo.',          reward: 25, penalty: 15, state: 'idle' },
-    { emoji: '💧', title: 'Meta de água',    desc: 'Beber todos os copos do dia.',       reward: 20, penalty: 10, state: 'idle' }
+    { emoji: '⏰', title: 'Acordar cedo',    desc: 'Sem soneca, levanta direto.',       reward: 30, penalty: 15, state: 'idle', days: null },
+    { emoji: '🏋️', title: 'Treino do dia',   desc: 'Foco total no treino.',             reward: 35, penalty: 20, state: 'idle', days: null },
+    { emoji: '💻', title: 'Estudo / Projeto',desc: 'Bloco profundo de estudo.',          reward: 25, penalty: 15, state: 'idle', days: null },
+    { emoji: '💧', title: 'Meta de água',    desc: 'Beber todos os copos do dia.',       reward: 20, penalty: 10, state: 'idle', days: null }
   ],
   courses: [
     { emoji: '🐍', name: 'Python Avançado',      total: 313, done: 0, cpp: 20 },
@@ -687,7 +790,19 @@ const DEFAULT = {
   monthlyIncome: 0, monthlyExpenses: 0,
   savingsRate: 0.9,
   dietNotes: [],
+  dietGoals: { protein: 150, calories: 2500, carbs: 250, fat: 70 },
+  profile: { height: 175, weight: 80, age: 22, activityLevel: 1.55 },
+  dietLog: [],
   workoutLog: {},
+  gym: {
+    weekPlan: ['Peito','Costas','Perna','Ombro','Braço','Livre','Descanso'],
+    exercises: [
+      { emoji: '🏋️', name: 'Supino',          current: 40, goal: 80,  rewardStep: 30, rewardGoal: 200, unit: 'kg' },
+      { emoji: '🦵', name: 'Leg Press',        current: 80, goal: 150, rewardStep: 30, rewardGoal: 200, unit: 'kg' },
+      { emoji: '💪', name: 'Rosca Direta',     current: 20, goal: 40,  rewardStep: 20, rewardGoal: 150, unit: 'kg' },
+      { emoji: '🏔️', name: 'Barra Fixa',      current: 0,  goal: 15,  rewardStep: 20, rewardGoal: 200, unit: 'reps' }
+    ]
+  },
   notifSettings: {
     enabled: false,
     times: ['08:00', '20:30'],
@@ -714,6 +829,12 @@ function load() {
     if (parsed._v !== DEFAULT._v) return JSON.parse(JSON.stringify(DEFAULT));
     // Garantir notifSettings existe
     if (!parsed.notifSettings) parsed.notifSettings = JSON.parse(JSON.stringify(DEFAULT.notifSettings));
+    if (!parsed.dietGoals) parsed.dietGoals = JSON.parse(JSON.stringify(DEFAULT.dietGoals));
+    if (!Array.isArray(parsed.dietLog)) parsed.dietLog = [];
+    if (!parsed.profile) parsed.profile = JSON.parse(JSON.stringify(DEFAULT.profile));
+    if (!parsed.gym) parsed.gym = JSON.parse(JSON.stringify(DEFAULT.gym));
+    if (!parsed.gym.weekPlan) parsed.gym.weekPlan = [...DEFAULT.gym.weekPlan];
+    if (!Array.isArray(parsed.gym.exercises)) parsed.gym.exercises = [...DEFAULT.gym.exercises];
     return parsed;
   } catch(e) { return JSON.parse(JSON.stringify(DEFAULT)); }
 }
@@ -730,8 +851,10 @@ function dayName() {
 }
 function todayIdx() { const d = new Date().getDay(); return d === 0 ? 6 : d - 1; }
 function dayProgress() {
-  const done = [D.kaffa.done, ...D.tasks.map(t => t.state === 'done')].filter(Boolean).length;
-  return { done, total: 1 + D.tasks.length };
+  const todayDayIdx = (new Date().getDay() + 6) % 7;
+  const visible = D.tasks.filter(t => !t.days || t.days.includes(todayDayIdx));
+  const done = [D.kaffa.done, ...visible.map(t => t.state === 'done')].filter(Boolean).length;
+  return { done, total: 1 + visible.length };
 }
 
 const WORKOUTS = ['Peito','Costas','Perna','Ombro','Braço','Livre','Descanso'];
@@ -778,7 +901,11 @@ function renderHoje() {
         : `<div class="task-actions"><button class="btn primary" onclick="completeKaffa()">Concluir Missão ✓</button></div>`}
     </div>`;
 
-  document.getElementById('taskList').innerHTML = D.tasks.map((t, i) => {
+  const todayDayIdx = (new Date().getDay() + 6) % 7;
+  document.getElementById('taskList').innerHTML = D.tasks
+    .map((t, i) => ({ t, i }))
+    .filter(({ t }) => !t.days || t.days.includes(todayDayIdx))
+    .map(({ t, i }) => {
     const pen = t.penalty || 0;
     const isIdle = t.state === 'idle';
     return `
@@ -1086,6 +1213,11 @@ function buyGoal(i) {
 // ============================================================
 function renderAdmin() {
   document.getElementById('aWaterGoal').value = D.water.goal;
+  const prof = D.profile;
+  document.getElementById('aPHeight').value   = prof.height;
+  document.getElementById('aPWeight').value   = prof.weight;
+  document.getElementById('aPAge').value      = prof.age;
+  document.getElementById('aPActivity').value = prof.activityLevel || 1.55;
   document.getElementById('aKaffaName').value    = D.kaffa.name;
   document.getElementById('aKaffaDesc').value    = D.kaffa.desc;
   document.getElementById('aKaffaReward').value  = D.kaffa.reward;
@@ -1098,9 +1230,10 @@ function renderAdmin() {
           <span class="a-item-icon">${t.emoji}</span>
           <div class="a-item-info">
             <strong>${t.title}</strong>
-            <span>+${t.reward} 🪙 · ${pen > 0 ? `-${pen} 🪙 pen. · ` : ''}${t.desc}</span>
+            <span>+${t.reward} 🪙 · ${pen > 0 ? `-${pen} 🪙 pen. · ` : ''}${t.days ? `📅 ${t.days.map(d=>['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'][d]).join(',')} · ` : ''}${t.desc}</span>
           </div>
           <div class="a-btns">
+            <button class="icon-btn" onclick="editTask(${i})">✏️</button>
             <button class="icon-btn del" onclick="deleteTask(${i})">🗑</button>
           </div>
         </div>`;
@@ -1125,7 +1258,7 @@ function renderAdmin() {
         <div class="a-item">
           <span class="a-item-icon">${c.emoji}</span>
           <div class="a-item-info"><strong>${c.name}</strong><span>${c.done}/${c.total} aulas · ${pct(c.done, c.total)}%</span></div>
-          <div class="a-btns"><button class="icon-btn del" onclick="deleteCourse(${i})">🗑</button></div>
+          <div class="a-btns"><button class="icon-btn" onclick="editCourse(${i})">✏️</button><button class="icon-btn del" onclick="deleteCourse(${i})">🗑</button></div>
         </div>`).join('')
     : `<p class="empty-msg">Nenhum curso.</p>`;
 
@@ -1134,7 +1267,7 @@ function renderAdmin() {
         <div class="a-item">
           <span class="a-item-icon">${s.emoji}</span>
           <div class="a-item-info"><strong>${s.name}</strong><span>🪙 ${fmt(s.price)}</span></div>
-          <div class="a-btns"><button class="icon-btn del" onclick="deleteShopItem(${i})">🗑</button></div>
+          <div class="a-btns"><button class="icon-btn" onclick="editShopItem(${i})">✏️</button><button class="icon-btn del" onclick="deleteShopItem(${i})">🗑</button></div>
         </div>`).join('')
     : `<p class="empty-msg">Nenhum item.</p>`;
 
@@ -1169,6 +1302,32 @@ function renderAdmin() {
   const on = D.vacation;
   document.getElementById('vacThumb').style.left       = on ? '24px' : '4px';
   document.getElementById('vacThumb').style.background = on ? 'var(--success)' : 'var(--muted)';
+
+  // Gym semana
+  const wp = D.gym.weekPlan;
+  const dayNames = ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'];
+  const dayEmojis = ['💪','💪','💪','💪','💪','🔥','😴'];
+  document.getElementById('gymWeekInputs').innerHTML = dayNames.map((d, i) => `
+    <div class="a-item">
+      <div class="a-item-icon">${dayEmojis[i]}</div>
+      <div class="a-item-info"><strong>${d}</strong></div>
+      <input type="text" class="f-input" id="gymDay${i}" value="${wp[i] || ''}" placeholder="Ex: Peito" style="max-width:140px;flex:none">
+    </div>`).join('');
+
+  document.getElementById('aGymList').innerHTML = D.gym.exercises.length
+    ? D.gym.exercises.map((ex, i) => `
+        <div class="a-item">
+          <span class="a-item-icon">${ex.emoji}</span>
+          <div class="a-item-info">
+            <strong>${ex.name}</strong>
+            <span>${ex.current}${ex.unit} → meta: ${ex.goal}${ex.unit} · +${ex.rewardStep}🪙/passo · +${ex.rewardGoal}🪙 meta</span>
+          </div>
+          <div class="a-btns">
+            <button class="icon-btn" onclick="editGymExercise(${i})">✏️</button>
+            <button class="icon-btn del" onclick="deleteGymExercise(${i})">🗑</button>
+          </div>
+        </div>`).join('')
+    : `<p class="empty-msg">Nenhum exercício.</p>`;
 }
 
 function toggleAccordion(id) {
@@ -1194,12 +1353,12 @@ function setTask(i, state) {
   if (prev === state) return;
   const t       = D.tasks[i];
   const penalty = t.penalty || 0;
-  if (prev === 'done'   && state === 'idle')  D.coins = Math.max(0, D.coins - t.reward);
+  if (prev === 'done'   && state === 'idle')  D.coins -= t.reward;
   if (prev === 'failed' && state === 'idle')  D.coins += penalty;
   if (state === 'done'  && prev !== 'done')   D.coins += t.reward;
   if (state === 'failed') {
-    if (prev === 'done') D.coins = Math.max(0, D.coins - t.reward);
-    if (!D.vacation)     D.coins = Math.max(0, D.coins - penalty);
+    if (prev === 'done') D.coins -= t.reward;
+    if (!D.vacation)     D.coins -= penalty;
   }
   D.tasks[i].state = state;
   save(); renderHoje();
@@ -1255,6 +1414,21 @@ function saveWaterGoal() {
   save(); alert('✓ Meta de água salva!');
 }
 
+function saveProfile() {
+  const height = parseFloat(document.getElementById('aPHeight').value);
+  const weight = parseFloat(document.getElementById('aPWeight').value);
+  const age    = parseFloat(document.getElementById('aPAge').value);
+  const act    = parseFloat(document.getElementById('aPActivity').value);
+  if (!height || !weight || !age) { alert('Preencha todos os campos!'); return; }
+  D.profile = { height, weight, age, activityLevel: act };
+  calcDietGoals();
+  const g = D.dietGoals;
+  const el = document.getElementById('profileCalcResult');
+  el.style.display = 'block';
+  el.className = 'note success';
+  el.innerHTML = `✓ Metas recalculadas! 🥩 ${g.protein}g prot · 🔥 ${g.calories} kcal · 🍞 ${g.carbs}g carbs · 🫙 ${g.fat}g gord.`;
+}
+
 function saveKaffa() {
   const name    = document.getElementById('aKaffaName').value.trim();
   const desc    = document.getElementById('aKaffaDesc').value.trim();
@@ -1265,17 +1439,50 @@ function saveKaffa() {
   save(); alert('✓ Super Missão atualizada!');
 }
 
-function addTask() {
+let editingTaskIdx = -1;
+function editTask(i) {
+  const t = D.tasks[i];
+  editingTaskIdx = i;
+  document.getElementById('nTEmoji').value   = t.emoji;
+  document.getElementById('nTTitle').value   = t.title;
+  document.getElementById('nTDesc').value    = t.desc;
+  document.getElementById('nTReward').value  = t.reward;
+  document.getElementById('nTPenalty').value = t.penalty || 0;
+  const daysEl = document.getElementById('nTDays');
+  const taskDays = t.days || [0,1,2,3,4,5,6];
+  Array.from(daysEl.options).forEach(o => {
+    o.selected = taskDays.includes(parseInt(o.value));
+  });
+  document.getElementById('nTFormLabel').textContent = `✏️ Editando: ${t.title}`;
+  document.getElementById('nTSubmitBtn').textContent = '💾 Salvar';
+  document.getElementById('nTCancelRow').style.display = 'block';
+  document.getElementById('nTTitle').focus();
+}
+function cancelEditTask() {
+  editingTaskIdx = -1;
+  ['nTEmoji','nTTitle','nTDesc','nTReward','nTPenalty'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('nTFormLabel').textContent  = 'Adicionar nova missão';
+  document.getElementById('nTSubmitBtn').textContent  = '+';
+  document.getElementById('nTCancelRow').style.display = 'none';
+  const daysEl = document.getElementById('nTDays');
+  if (daysEl) Array.from(daysEl.options).forEach(o => o.selected = true);
+}
+function saveTaskForm() {
   const emoji   = document.getElementById('nTEmoji').value.trim()   || '🎯';
   const title   = document.getElementById('nTTitle').value.trim();
   const desc    = document.getElementById('nTDesc').value.trim();
   const reward  = parseInt(document.getElementById('nTReward').value)  || 20;
   const penalty = parseInt(document.getElementById('nTPenalty').value) || 0;
   if (!title) { alert('Título é obrigatório!'); return; }
-  D.tasks.push({ emoji, title, desc, reward, penalty, state: 'idle' });
-  save();
-  ['nTEmoji','nTTitle','nTDesc','nTReward','nTPenalty'].forEach(id => document.getElementById(id).value = '');
-  renderAdmin();
+  const daysEl = document.getElementById('nTDays');
+  const selectedDays = Array.from(daysEl.selectedOptions).map(o => parseInt(o.value));
+  const days = selectedDays.length === 7 ? null : selectedDays;
+  if (editingTaskIdx >= 0) {
+    D.tasks[editingTaskIdx] = { ...D.tasks[editingTaskIdx], emoji, title, desc, reward, penalty, days };
+  } else {
+    D.tasks.push({ emoji, title, desc, reward, penalty, state: 'idle', days });
+  }
+  save(); cancelEditTask(); renderAdmin();
 }
 function deleteTask(i) {
   if (!confirm(`Deletar "${D.tasks[i].title}"?`)) return;
@@ -1342,31 +1549,70 @@ function deleteRoutine(i) {
   D.routine.splice(i, 1); save(); renderAdmin();
 }
 
-function addCourse() {
+let editingCourseIdx = -1;
+function editCourse(i) {
+  const c = D.courses[i];
+  editingCourseIdx = i;
+  document.getElementById('nCEmoji').value = c.emoji;
+  document.getElementById('nCName').value  = c.name;
+  document.getElementById('nCTotal').value = c.total;
+  document.getElementById('nCDone').value  = c.done;
+  document.getElementById('nCFormLabel').textContent = `✏️ Editando: ${c.name}`;
+  document.getElementById('nCSubmitBtn').textContent  = '💾 Salvar';
+  document.getElementById('nCCancelRow').style.display = 'block';
+  document.getElementById('nCName').focus();
+}
+function cancelEditCourse() {
+  editingCourseIdx = -1;
+  ['nCEmoji','nCName','nCTotal','nCDone'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('nCFormLabel').textContent  = 'Adicionar curso';
+  document.getElementById('nCSubmitBtn').textContent  = '+';
+  document.getElementById('nCCancelRow').style.display = 'none';
+}
+function saveCourseForm() {
   const emoji = document.getElementById('nCEmoji').value.trim() || '📖';
   const name  = document.getElementById('nCName').value.trim();
   const total = parseInt(document.getElementById('nCTotal').value) || 0;
   const done  = parseInt(document.getElementById('nCDone').value)  || 0;
   if (!name || total <= 0) { alert('Nome e total são obrigatórios!'); return; }
-  D.courses.push({ emoji, name, total, done: Math.min(done, total), cpp: 20 });
-  save();
-  ['nCEmoji','nCName','nCTotal','nCDone'].forEach(id => document.getElementById(id).value = '');
-  renderAdmin();
+  const obj = { emoji, name, total, done: Math.min(done, total), cpp: editingCourseIdx >= 0 ? D.courses[editingCourseIdx].cpp : 20 };
+  if (editingCourseIdx >= 0) D.courses[editingCourseIdx] = obj;
+  else D.courses.push(obj);
+  save(); cancelEditCourse(); renderAdmin();
 }
 function deleteCourse(i) {
   if (!confirm(`Deletar "${D.courses[i].name}"?`)) return;
   D.courses.splice(i, 1); save(); renderAdmin();
 }
 
-function addShopItem() {
+let editingShopIdx = -1;
+function editShopItem(i) {
+  const s = D.shop[i];
+  editingShopIdx = i;
+  document.getElementById('nSEmoji').value = s.emoji;
+  document.getElementById('nSName').value  = s.name;
+  document.getElementById('nSPrice').value = s.price;
+  document.getElementById('nSFormLabel').textContent = `✏️ Editando: ${s.name}`;
+  document.getElementById('nSSubmitBtn').textContent  = '💾 Salvar';
+  document.getElementById('nSCancelRow').style.display = 'block';
+  document.getElementById('nSName').focus();
+}
+function cancelEditShopItem() {
+  editingShopIdx = -1;
+  ['nSEmoji','nSName','nSPrice'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('nSFormLabel').textContent  = 'Adicionar item à loja';
+  document.getElementById('nSSubmitBtn').textContent  = '+';
+  document.getElementById('nSCancelRow').style.display = 'none';
+}
+function saveShopForm() {
   const emoji = document.getElementById('nSEmoji').value.trim() || '🎁';
   const name  = document.getElementById('nSName').value.trim();
   const price = parseInt(document.getElementById('nSPrice').value) || 0;
   if (!name || price <= 0) { alert('Nome e preço são obrigatórios!'); return; }
-  D.shop.push({ emoji, name, price });
-  save();
-  ['nSEmoji','nSName','nSPrice'].forEach(id => document.getElementById(id).value = '');
-  renderAdmin();
+  const obj = { emoji, name, price };
+  if (editingShopIdx >= 0) D.shop[editingShopIdx] = obj;
+  else D.shop.push(obj);
+  save(); cancelEditShopItem(); renderAdmin();
 }
 function deleteShopItem(i) {
   if (!confirm(`Deletar "${D.shop[i].name}"?`)) return;
@@ -1606,28 +1852,260 @@ function initSwipe(el, idx) {
 // ============================================================
 // DIETA
 // ============================================================
-function renderDieta() {
-  const notes = D.dietNotes || [];
-  document.getElementById('dietaNotes').innerHTML = notes.length
-    ? notes.map((n, i) => `
-        <div class="task-card" style="display:flex;align-items:center;gap:12px;padding:14px">
-          <div class="emoji-box" style="width:38px;height:38px">${n.emoji || '🥗'}</div>
-          <div style="flex:1;font-size:13px;font-weight:500">${n.text}</div>
-          <button class="icon-btn del" onclick="deleteDietNote(${i})">🗑</button>
-        </div>`).join('')
-    : `<div class="card"><p class="empty-msg">Sem anotações ainda.</p></div>`;
+function calcDietGoals() {
+  const p = D.profile;
+  // Mifflin-St Jeor (homem)
+  const tmb = 10 * p.weight + 6.25 * p.height - 5 * p.age + 5;
+  const tdee = Math.round(tmb * (p.activityLevel || 1.55));
+  const protein  = Math.round(p.weight * 2);
+  const fat      = Math.round(p.weight * 0.8);
+  const calories = tdee;
+  const carbs    = Math.round((tdee - protein * 4 - fat * 9) / 4);
+  D.dietGoals = { protein, calories, carbs: Math.max(0, carbs), fat };
+  save();
 }
-function addDietNote() {
-  const emoji = document.getElementById('dNEmoji').value.trim() || '🥗';
-  const text  = document.getElementById('dNText').value.trim();
-  if (!text) { alert('Escreva algo!'); return; }
-  if (!D.dietNotes) D.dietNotes = [];
-  D.dietNotes.push({ emoji, text }); save();
-  document.getElementById('dNEmoji').value = '';
-  document.getElementById('dNText').value  = '';
+
+function renderDieta() {
+  const goals  = D.dietGoals;
+  const log    = D.dietLog;
+  const totals = log.reduce((acc, item) => {
+    acc.protein  += item.protein  || 0;
+    acc.calories += item.calories || 0;
+    acc.carbs    += item.carbs    || 0;
+    acc.fat      += item.fat      || 0;
+    return acc;
+  }, { protein: 0, calories: 0, carbs: 0, fat: 0 });
+
+  const proteinPct  = pct(totals.protein,  goals.protein);
+  const calPct      = pct(totals.calories, goals.calories);
+  const carbsPct    = pct(totals.carbs,    goals.carbs);
+  const fatPct      = pct(totals.fat,      goals.fat);
+  const proteinLeft = Math.max(0, goals.protein - totals.protein);
+  const proteinOver = totals.protein > goals.protein;
+
+  // Card resumo proteína
+  document.getElementById('dietSummaryCard').innerHTML = `
+    <div class="hero-top">
+      <div>
+        <div class="eyebrow">Proteína do dia</div>
+        <div style="font-family:'Bebas Neue';font-size:48px;letter-spacing:.04em;color:var(--accent);line-height:1">${totals.protein}g</div>
+        <p>Meta: ${goals.protein}g · Falta: ${proteinLeft}g</p>
+      </div>
+      <div class="pill" style="${proteinOver ? 'background:var(--success-soft);color:var(--success)' : ''}">${proteinPct}%</div>
+    </div>
+    <div class="progress"><span style="width:${Math.min(proteinPct,100)}%;background:${proteinOver ? 'var(--success)' : 'var(--accent)'}"></span></div>
+    <p style="margin-top:8px;font-size:12px;color:${proteinOver ? 'var(--success)' : 'var(--muted)'}">
+      ${proteinOver ? '✅ Meta de proteína concluída!' : proteinPct >= 80 ? '💪 Quase lá! Só mais um pouco.' : '🥩 Continue adicionando proteína ao longo do dia.'}
+    </p>`;
+
+  // Stats macros secundários
+  document.getElementById('dietMacroStats').innerHTML = `
+    <article class="stat">
+      <strong style="font-size:20px">${totals.calories}</strong>
+      <span>/ ${goals.calories} kcal</span>
+      <div class="progress" style="margin-top:6px"><span style="width:${Math.min(calPct,100)}%;background:${totals.calories > goals.calories ? 'var(--danger)' : 'var(--blue)'}"></span></div>
+    </article>
+    <article class="stat">
+      <strong style="font-size:20px">${totals.carbs}g</strong>
+      <span>/ ${goals.carbs}g carbs</span>
+      <div class="progress" style="margin-top:6px"><span style="width:${Math.min(carbsPct,100)}%;background:${totals.carbs > goals.carbs ? 'var(--danger)' : 'var(--purple)'}"></span></div>
+    </article>
+    <article class="stat">
+      <strong style="font-size:20px">${totals.fat}g</strong>
+      <span>/ ${goals.fat}g gord.</span>
+      <div class="progress" style="margin-top:6px"><span style="width:${Math.min(fatPct,100)}%;background:${totals.fat > goals.fat ? 'var(--danger)' : 'var(--success)'}"></span></div>
+    </article>`;
+
+  // Contagem
+  document.getElementById('dietItemCount').textContent = `${log.length} registro${log.length !== 1 ? 's' : ''}`;
+
+  // Lista de alimentos
+  document.getElementById('dietItemList').innerHTML = log.length
+    ? log.map((item, i) => `
+        <div class="task-card">
+          <div class="task-top">
+            <div class="emoji-box">🍽️</div>
+            <div class="task-main">
+              <h3>${item.name}</h3>
+              <div class="mini-row">
+                <span class="chip" style="background:var(--success-soft);color:var(--success)">🥩 ${item.protein || 0}g prot.</span>
+                <span class="chip">🔥 ${item.calories || 0} kcal</span>
+                <span class="chip">🍞 ${item.carbs || 0}g carbs</span>
+                <span class="chip">🫙 ${item.fat || 0}g gord.</span>
+              </div>
+            </div>
+            <div class="task-status">
+              <button class="icon-btn del" onclick="deleteDietItem(${i})">🗑</button>
+            </div>
+          </div>
+        </div>`).join('')
+    : `<div class="card"><p class="empty-msg">Nenhum alimento registrado ainda.</p></div>`;
+
+  // Análise / feedback
+  const msgs = [];
+  if (proteinOver)
+    msgs.push({ color: 'var(--success)', msg: '✅ Meta de proteína concluída!' });
+  else if (proteinPct >= 80)
+    msgs.push({ color: 'var(--accent)',  msg: `💪 Faltam apenas ${proteinLeft}g de proteína para bater a meta!` });
+  else
+    msgs.push({ color: 'var(--muted)',   msg: `🥩 Você ainda não bateu sua meta de proteína. Faltam ${proteinLeft}g.` });
+
+  if (totals.calories > goals.calories)
+    msgs.push({ color: 'var(--danger)', msg: `⚠️ Você passou da meta de calorias em ${totals.calories - goals.calories} kcal.` });
+  else if (log.length > 0 && calPct < 60)
+    msgs.push({ color: 'var(--muted)', msg: `🍽️ Calorias abaixo do planejado (${totals.calories}/${goals.calories} kcal).` });
+
+  document.getElementById('dietAnalysis').innerHTML = msgs.map(a =>
+    `<div class="note" style="background:transparent;border:1px solid var(--line);color:${a.color};margin-bottom:8px">${a.msg}</div>`
+  ).join('');
+}
+
+function addDietItem() {
+  const name     = document.getElementById('dFName').value.trim();
+  const protein  = parseFloat(document.getElementById('dFProtein').value)  || 0;
+  const calories = parseFloat(document.getElementById('dFCalories').value) || 0;
+  const carbs    = parseFloat(document.getElementById('dFCarbs').value)    || 0;
+  const fat      = parseFloat(document.getElementById('dFFat').value)      || 0;
+  if (!name) { alert('Informe o nome do alimento!'); return; }
+  D.dietLog.push({ name, protein, calories, carbs, fat });
+  save();
+  ['dFName','dFProtein','dFCalories','dFCarbs','dFFat'].forEach(id => document.getElementById(id).value = '');
   renderDieta();
 }
-function deleteDietNote(i) { D.dietNotes.splice(i, 1); save(); renderDieta(); }
+
+function deleteDietItem(i) {
+  D.dietLog.splice(i, 1); save(); renderDieta();
+}
+
+// ============================================================
+// TREINO / GYM
+// ============================================================
+function renderTreino() {
+  const gym    = D.gym;
+  const todI   = todayIdx();
+  const plan   = gym.weekPlan;
+
+  // Card semana
+  document.getElementById('gymWeekCard').innerHTML = `
+    <div class="hero-top">
+      <div>
+        <div class="eyebrow">Hoje</div>
+        <div style="font-family:'Bebas Neue';font-size:42px;letter-spacing:.04em;color:var(--accent);line-height:1">${plan[todI]}</div>
+        <p>Treino de hoje — foco total</p>
+      </div>
+      <div class="pill">${DAY_LETTERS[todI]}</div>
+    </div>
+    <div class="divider" style="margin:12px 0 10px"></div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">
+      ${DAY_LETTERS.map((d, i) => `
+        <div style="text-align:center;padding:8px 4px;border-radius:11px;border:1px solid ${i === todI ? 'var(--accent)' : 'var(--line)'};background:${i === todI ? 'var(--accent-soft)' : 'var(--surface-2)'}">
+          <div style="font-size:10px;font-weight:700;color:${i === todI ? 'var(--accent)' : 'var(--muted)'}">${d}</div>
+          <div style="font-size:9px;color:var(--muted);margin-top:2px">${plan[i].substring(0,4)}</div>
+        </div>`).join('')}
+    </div>`;
+
+  // Lista de exercícios
+  document.getElementById('gymExerciseList').innerHTML = gym.exercises.length
+    ? gym.exercises.map((ex, i) => {
+        const p   = pct(ex.current, ex.goal);
+        const done = ex.current >= ex.goal;
+        return `
+        <div class="task-card ${done ? 'done' : ''}">
+          <div class="task-top">
+            <div class="emoji-box">${ex.emoji}</div>
+            <div class="task-main">
+              <h3>${ex.name}</h3>
+              <p>Atual: ${ex.current}${ex.unit} · Meta: ${ex.goal}${ex.unit}</p>
+              <div class="progress" style="margin-top:6px"><span style="width:${Math.min(p,100)}%;background:${done ? 'var(--success)' : 'var(--accent)'}"></span></div>
+              <div class="mini-row">
+                <span class="chip" style="${done ? 'background:var(--success-soft);color:var(--success)' : ''}">${done ? '🏆 Meta batida!' : p + '%'}</span>
+                <span class="chip">+${ex.rewardStep} 🪙 por +5${ex.unit}</span>
+                ${done ? '' : `<span class="chip" style="background:var(--accent-soft);color:var(--accent)">Falta ${ex.goal - ex.current}${ex.unit}</span>`}
+              </div>
+            </div>
+            <div class="task-status">
+              ${done
+                ? `<span class="tag done">🏆 Meta</span>`
+                : `<button class="btn primary btn-sm" onclick="gymAddWeight(${i})" style="padding:0 10px;min-height:36px;font-size:12px">+5${ex.unit}</button>`}
+            </div>
+          </div>
+          ${done ? `<div class="note success" style="margin-top:10px">🏆 Você bateu a meta de ${ex.goal}${ex.unit}! +${ex.rewardGoal} 🪙 bônus recebido.</div>` : ''}
+        </div>`;
+      }).join('')
+    : `<div class="card"><p class="empty-msg">Nenhum exercício cadastrado. Adicione no Admin.</p></div>`;
+}
+
+function gymAddWeight(i) {
+  const ex = D.gym.exercises[i];
+  if (!ex) return;
+  if (ex.current >= ex.goal) { alert('Você já bateu a meta! 🏆'); return; }
+  ex.current += 5;
+  D.coins += ex.rewardStep;
+  if (ex.current >= ex.goal) {
+    ex.current = ex.goal;
+    D.coins += ex.rewardGoal;
+    alert(`🏆 META BATIDA! ${ex.name}: ${ex.goal}${ex.unit}!\n+${ex.rewardGoal} moedas bônus!`);
+  }
+  save(); renderTreino();
+  const cStat = document.getElementById('coinsStat');
+  if (cStat) cStat.textContent = fmt(D.coins);
+}
+
+function saveGymWeekPlan() {
+  const plan = [];
+  for (let i = 0; i < 7; i++) {
+    const el = document.getElementById('gymDay' + i);
+    plan.push(el ? el.value.trim() || DEFAULT.gym.weekPlan[i] : DEFAULT.gym.weekPlan[i]);
+  }
+  D.gym.weekPlan = plan;
+  // Também atualiza WORKOUTS para manter consistência no calendário
+  plan.forEach((name, i) => { WORKOUTS[i] = name; });
+  save(); alert('✓ Plano semanal atualizado!');
+}
+
+let editingGymIdx = -1;
+function editGymExercise(i) {
+  const ex = D.gym.exercises[i];
+  editingGymIdx = i;
+  document.getElementById('nGymEmoji').value      = ex.emoji;
+  document.getElementById('nGymName').value       = ex.name;
+  document.getElementById('nGymCurrent').value    = ex.current;
+  document.getElementById('nGymGoal').value       = ex.goal;
+  document.getElementById('nGymUnit').value       = ex.unit;
+  document.getElementById('nGymRewardStep').value = ex.rewardStep;
+  document.getElementById('nGymRewardGoal').value = ex.rewardGoal;
+  document.getElementById('nGymFormLabel').textContent = `✏️ Editando: ${ex.name}`;
+  document.getElementById('nGymSubmitBtn').textContent  = '💾 Salvar';
+  document.getElementById('nGymCancelRow').style.display = 'block';
+  document.getElementById('nGymName').focus();
+}
+function cancelEditGymExercise() {
+  editingGymIdx = -1;
+  ['nGymEmoji','nGymName','nGymCurrent','nGymGoal','nGymUnit','nGymRewardStep','nGymRewardGoal']
+    .forEach(id => document.getElementById(id).value = '');
+  document.getElementById('nGymFormLabel').textContent  = 'Adicionar exercício';
+  document.getElementById('nGymSubmitBtn').textContent  = '+';
+  document.getElementById('nGymCancelRow').style.display = 'none';
+}
+function saveGymExerciseForm() {
+  const emoji       = document.getElementById('nGymEmoji').value.trim()       || '🏋️';
+  const name        = document.getElementById('nGymName').value.trim();
+  const current     = parseFloat(document.getElementById('nGymCurrent').value) || 0;
+  const goal        = parseFloat(document.getElementById('nGymGoal').value)    || 0;
+  const unit        = document.getElementById('nGymUnit').value.trim()         || 'kg';
+  const rewardStep  = parseInt(document.getElementById('nGymRewardStep').value) || 20;
+  const rewardGoal  = parseInt(document.getElementById('nGymRewardGoal').value) || 150;
+  if (!name || goal <= 0) { alert('Nome e meta são obrigatórios!'); return; }
+  const obj = { emoji, name, current, goal, unit, rewardStep, rewardGoal };
+  if (editingGymIdx >= 0) D.gym.exercises[editingGymIdx] = obj;
+  else D.gym.exercises.push(obj);
+  save(); cancelEditGymExercise(); renderAdmin();
+}
+function deleteGymExercise(i) {
+  if (!confirm(`Deletar "${D.gym.exercises[i].name}"?`)) return;
+  if (editingGymIdx === i) cancelEditGymExercise();
+  D.gym.exercises.splice(i, 1); save(); renderAdmin();
+}
 
 // ============================================================
 // NAVIGATION
@@ -1641,7 +2119,7 @@ function showTab(id, btn) {
   if (id === 'rotina') renderRotina();
   if (id === 'cursos') renderCursos();
   if (id === 'loja')   renderLoja();
-  if (id === 'metas')  renderMetas();
+  if (id === 'treino') renderTreino();
   if (id === 'dieta')  renderDieta();
   if (id === 'admin')  renderAdmin();
 }
